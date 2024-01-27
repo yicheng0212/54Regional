@@ -52,6 +52,18 @@
                             <label for="image">圖片上傳:</label>
                             <input type="file" class="form-control-file" id="image" name="image">
                         </div>
+                        <!-- 編輯選項 -->
+                        <div id="editOptions" style="display: none;">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="displayEmail" name="display_email" checked>
+                                <label class="form-check-label" for="displayEmail">Email</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="displayPhone" name="display_phone" checked>
+                                <label class="form-check-label" for="displayPhone">電話</label>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">提交</button>
                     </form>
                 </div>
@@ -66,11 +78,10 @@
 </div>
 <script>
     $(document).ready(function() {
-        // 讀取留言列表
+        // 加载留言列表
         loadMessages();
     });
-
-    // 讀取留言列表
+    // 加载留言列表
     function loadMessages() {
         $.ajax({
             url: './api/displayMessage.php',
@@ -81,7 +92,7 @@
         });
     }
 
-    // 處理新增留言表單
+    // 处理新增留言表单提交
     $('#messageForm').on('submit', function(e) {
         e.preventDefault();
         var formData = new FormData(this);
@@ -96,13 +107,35 @@
             success: function(data) {
                 alert(data);
                 $('#messageModal').modal('hide');
-                loadMessages(); // 重新載入留言
-                $('#messageForm').attr('action', ''); // 重置表單的 action
+                loadMessages(); // 重新加载留言
+                $('#messageForm').attr('action', ''); // 重置表单的 action
             }
         });
     });
 
-    // 處理編輯留言
+    // 验证并编辑留言
+    function verifyAndEditMessage(id) {
+        var messageNumber = prompt("请输入留言编号以进行验证:");
+        if (messageNumber) {
+            $.ajax({
+                url: './api/verifyMessageNumber.php',
+                type: 'POST',
+                data: { id: id, message_number: messageNumber },
+                success: function(data) {
+                    if(data === "valid") {
+                        editMessage(id); // 验证通过后，调用 editMessage 函数
+                    } else {
+                        alert("留言编号不正确");
+                    }
+                },
+                error: function() {
+                    alert("验证时发生错误");
+                }
+            });
+        }
+    }
+
+    // 编辑留言
     function editMessage(id) {
         $.ajax({
             url: './api/getMessage.php',
@@ -111,75 +144,77 @@
             success: function(data) {
                 var message = JSON.parse(data);
 
-                // 填充表單數據
+                // 填充表单数据
                 $('#name').val(message.name);
                 $('#messageNumber').val(message.message_number);
                 $('#email').val(message.email);
                 $('#phone').val(message.phone);
                 $('#content').val(message.content);
-                $('#displayEmail').prop('checked', message.display_email); // 假設有這個選項
-                $('#displayPhone').prop('checked', message.display_phone); // 假設有這個選項
+
+                // 设置复选框默认为选中状态
+                $('#displayEmail').prop('checked', message.display_email === 1);
+                $('#displayPhone').prop('checked', message.display_phone === 1);
+
                 $('#messageId').val(message.id);
 
-                // 更新表單的提交 URL
-                $('#messageForm').attr('action', './api/editMessage.php');
+                // 显示编辑选项
+                $('#editOptions').show();
 
-                // 顯示燈箱
-                $('#messageModal').modal('show');
+                // 更新表单的提交 URL
+                $('#messageForm').attr('action', './api/editMessage.php');
+                $('#messageModal').modal('show'); // 显示灯箱
+            },
+            error: function() {
+                alert("加载留言时发生错误");
             }
         });
     }
 
-
-    // 處理刪除留言
-    function deleteMessage(id, messageNumber) {
-        if(confirm("確定要刪除這條留言嗎？")) {
+    // 处理删除留言
+    function verifyAndDeleteMessage(id) {
+        var messageNumber = prompt("请输入留言编号以进行验证:");
+        if (messageNumber) {
             $.ajax({
-                url: './api/deleteMessage.php',
+                url: './api/verifyMessageNumber.php',
                 type: 'POST',
                 data: { id: id, message_number: messageNumber },
                 success: function(data) {
-                    alert(data);
-                    loadMessages(); // 重新載入留言
+                    if(data === "valid") {
+                        deleteMessage(id); // 验证通过后，调用 deleteMessage 函数
+                    } else {
+                        alert("留言编号不正确");
+                    }
+                },
+                error: function() {
+                    alert("验证时发生错误");
                 }
             });
         }
     }
-    function verifyAndEditMessage(id, messageNumber) {
+
+    // 删除留言
+    function deleteMessage(id) {
         $.ajax({
-            url: './api/verifyMessageNumber.php',
+            url: './api/deleteMessage.php',
             type: 'POST',
-            data: { id: id, message_number: messageNumber },
+            data: { id: id },
             success: function(data) {
-                if(data === "valid") {
-                    editMessage(id);
-                } else {
-                    alert("留言編號不正確");
-                }
-            }
-        });
-    }
-    //留言編號驗證
-    function verifyAndDeleteMessage(id, messageNumber) {
-        $.ajax({
-            url: './api/verifyMessageNumber.php',
-            type: 'POST',
-            data: { id: id, message_number: messageNumber },
-            success: function(data) {
-                if(data === "valid") {
-                    deleteMessage(id, messageNumber);
-                } else {
-                    alert("留言編號不正確");
-                }
+                alert(data); // 显示从后端返回的消息
+                loadMessages(); // 重新加载留言
+            },
+            error: function() {
+                alert("删除留言时发生错误");
             }
         });
     }
 
 
+    // 准备新增留言
     function prepareAddMessage() {
-        $('#messageForm')[0].reset(); // 重置表單
-        $('#messageForm').attr('action', './api/createMessage.php'); // 設置為新增留言的 URL
-        $('#messageId').val(''); // 清空隱藏的 id 欄位
+        $('#messageForm')[0].reset(); // 重置表单
+        $('#messageForm').attr('action', './api/createMessage.php'); // 设置为新增留言的 URL
+        $('#messageId').val(''); // 清空隐藏的 id 字段
+        $('#editOptions').hide(); // 隐藏编辑选项
     }
 </script>
 </body>

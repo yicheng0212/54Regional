@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
         $row = $result->fetch_assoc();
         echo json_encode($row);
     } else {
-        echo "No message found";
+        echo "沒有留言";
     }
 
     $stmt->close();
