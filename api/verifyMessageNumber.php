@@ -12,11 +12,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->fetch();
     $stmt->close();
 
+    // 使用数组返回结果，包括验证状态和id
+    $response = array();
     if ($db_message_number === $message_number) {
-        echo "valid";
+        $response['status'] = "valid";
+        $response['id'] = $id;  // 包含id以供前端使用
     } else {
-        echo "invalid";
+        $response['status'] = "invalid";
     }
+
+    // 将数组转换为JSON格式返回
+    echo json_encode($response);
 }
 
 $conn->close();
+?>

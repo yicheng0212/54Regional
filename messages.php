@@ -121,9 +121,10 @@
                 url: './api/verifyMessageNumber.php',
                 type: 'POST',
                 data: { id: id, message_number: messageNumber },
-                success: function(data) {
-                    if(data === "valid") {
-                        editMessage(id); // 验证通过后，调用 editMessage 函数
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    if(data.status === "valid") {
+                        editMessage(data.id); // 使用从后端获取的 id
                     } else {
                         alert("留言编号不正确");
                     }
@@ -178,9 +179,10 @@
                 url: './api/verifyMessageNumber.php',
                 type: 'POST',
                 data: { id: id, message_number: messageNumber },
-                success: function(data) {
-                    if(data === "valid") {
-                        deleteMessage(id); // 验证通过后，调用 deleteMessage 函数
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    if(data.status === "valid") {
+                        deleteMessage(data.id); // 使用从后端获取的 id
                     } else {
                         alert("留言编号不正确");
                     }

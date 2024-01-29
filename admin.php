@@ -32,12 +32,12 @@ if (!isset($_SESSION['user_id'])) {
     include "./api/db.php";
     $page = $_GET['page'] ?? 'messages';
     switch ($page) {
-        case 'bookings':
-            include 'AdminBookings.php';
-            break;
         case 'messages':
-        default:
             include 'AdminMessages.php';
+            break;
+        case 'bookings':
+        default:
+            include 'AdminBookings.php';
             break;
     }
     ?>
