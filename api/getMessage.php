@@ -4,7 +4,7 @@ include 'db.php';
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT name, message_number, email, phone, content FROM messages WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, name, messageNumber, email, phone, content, display_email, display_phone, is_top, admin_response FROM messages WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
         $row = $result->fetch_assoc();
         echo json_encode($row);
     } else {
-        echo "沒有留言";
+        echo json_encode(["message" => "沒有留言"]);
     }
 
     $stmt->close();

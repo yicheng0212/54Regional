@@ -1,17 +1,15 @@
 <?php
 include 'db.php';
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['id'];
 
-    // 直接更新留言為已刪除狀態
-    $stmt = $conn->prepare("UPDATE messages SET content = '此留言已被刪除', deleted_at = NOW() WHERE id = ?");
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
+    $id = $_POST['id'];
+    $stmt = $conn->prepare("DELETE FROM messages WHERE id = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
-        echo "留言已刪除";
+        echo json_encode(["message" => "留言已成功删除。"]);
     } else {
-        echo "留言刪除失敗：" . $stmt->error;
+        echo json_encode(["error" => "删除留言时发生错误。"]);
     }
-    $stmt->close();
 }
-
+$stmt->close();
 $conn->close();

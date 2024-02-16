@@ -29,8 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "圖形驗證碼錯誤";
     }
-} else {
-    echo "invalid_request";
 }
 
 $conn->close();

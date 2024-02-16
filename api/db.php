@@ -6,6 +6,6 @@ $dbname = "54regional";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+header('Content-Type: application/json');
+
+$data = json_decode(file_get_contents('php://input'), true);

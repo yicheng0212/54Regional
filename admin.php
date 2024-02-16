@@ -29,7 +29,6 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
     <?php
-    include "./api/db.php";
     $page = $_GET['page'] ?? 'messages';
     switch ($page) {
         case 'messages':
@@ -42,8 +41,5 @@ if (!isset($_SESSION['user_id'])) {
     }
     ?>
 </div>
-<script>
-
-</script>
 </body>
 </html>

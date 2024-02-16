@@ -16,11 +16,11 @@
     </button>
 
     <!-- 燈箱 (Modal) - 新增和編輯留言 -->
-    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">留言</h5>
+                    <h5 class="modal-title" id="modal">留言</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -34,7 +34,7 @@
                         </div>
                         <div class="form-group">
                             <label for="messageNumber">留言編號 (4位數字):</label>
-                            <input type="text" class="form-control" id="messageNumber" name="message_number" pattern="\d{4}" required>
+                            <input type="text" class="form-control" id="messageNumber" name="messageNumber" pattern="\d{4}" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
@@ -55,11 +55,11 @@
                         <!-- 編輯選項 -->
                         <div id="editOptions" style="display: none;">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="displayEmail" name="display_email" checked>
+                                <input type="checkbox" class="form-check-input" id="displayEmail" name="display_email">
                                 <label class="form-check-label" for="displayEmail">Email</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="displayPhone" name="display_phone" checked>
+                                <input type="checkbox" class="form-check-input" id="displayPhone" name="display_phone">
                                 <label class="form-check-label" for="displayPhone">電話</label>
                             </div>
                         </div>
@@ -72,22 +72,67 @@
     </div>
 
     <!-- 留言列表 -->
-    <div id="messagesList" class="mt-4">
+    <div id="messageList" class="mt-4">
         <!-- 留言卡片將透過 AJAX 載入 -->
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        // 加载留言列表
         loadMessages();
     });
-    // 加载留言列表
     function loadMessages() {
         $.ajax({
             url: './api/displayMessage.php',
             type: 'GET',
-            success: function(data) {
-                $('#messagesList').html(data);
+            dataType: 'json',
+            success: function(messages) {
+                let html = '';
+                messages.forEach(function(message) {
+                    html += `<div class='card mb-3'><div class='card-body'>`;
+                    if (message.deleted_at === null) {
+                        // 正常顯示留言
+                        html += `<h5 class='card-title'>${message.name}</h5>`;
+                        if(message.is_top === "1") {
+                            html += `<span class="badge badge-success">置顶</span> `;
+                        }
+                        html += `<p class='card-text'>留言內容:${message.content.replace(/\n/g, "<br>")}</p>`;
+
+                        if (message.image_path) {
+                            html += `<img src='${message.image_path}' class='card-img-top mb-3' style='max-width: 300px; height: auto;' alt='圖片'>`;
+                        }
+
+                        if (message.display_email === "1") {
+                            html += `<p class='card-text'>Email: ${message.email}</p>`;
+                        }
+                        if (message.display_phone === "1") {
+                            html += `<p class='card-text'>電話: ${message.phone}</p>`;
+                        }
+
+                        html += `<p class='card-text'><small class='text-muted'>發佈於 ${message.created_at}`;
+                        if (message.updated_at !== message.created_at) {
+                            html += `，修改於 ${message.updated_at}`;
+                        }
+                        html += `</small></p>`;
+
+                        // 檢查並顯示管理者回覆
+                        if (message.admin_response) {
+                            html += `<div class='alert alert-secondary mt-3'>管理者回覆: ${message.admin_response}</div>`;
+                        }
+
+                        html += `<button onclick='verifyAndEditMessage(${message.id})' class='btn btn-primary'>編輯</button> `;
+                        html += `<button onclick='verifyAndDeleteMessage(${message.id})' class='btn btn-danger'>刪除</button>`;
+                    } else {
+                        // 顯示已刪除的留言
+                        html += `<h5 class='card-title'>${message.name}</h5>`;
+                        html += `<p class='card-text'>此留言已被刪除。</p>`;
+                        html += `<p class='card-text'><small class='text-muted'>發佈於 ${message.created_at}，刪除於 ${message.deleted_at}</small></p>`;
+                    }
+                    html += `</div></div>`;
+                });
+                $('#messageList').html(html);
+            },
+            error: function() {
+                alert('無法加載留言');
             }
         });
     }
@@ -120,7 +165,7 @@
             $.ajax({
                 url: './api/verifyMessageNumber.php',
                 type: 'POST',
-                data: { id: id, message_number: messageNumber },
+                data: { id: id, messageNumber: messageNumber },
                 success: function(response) {
                     var data = JSON.parse(response);
                     if(data.status === "valid") {
@@ -147,14 +192,11 @@
 
                 // 填充表单数据
                 $('#name').val(message.name);
-                $('#messageNumber').val(message.message_number);
+                $('#messageNumber').val(message.messageNumber);
                 $('#email').val(message.email);
                 $('#phone').val(message.phone);
                 $('#content').val(message.content);
 
-                // 设置复选框默认为选中状态
-                $('#displayEmail').prop('checked', message.display_email === 1);
-                $('#displayPhone').prop('checked', message.display_phone === 1);
 
                 $('#messageId').val(message.id);
 
@@ -178,7 +220,7 @@
             $.ajax({
                 url: './api/verifyMessageNumber.php',
                 type: 'POST',
-                data: { id: id, message_number: messageNumber },
+                data: { id: id, messageNumber: messageNumber },
                 success: function(response) {
                     var data = JSON.parse(response);
                     if(data.status === "valid") {
@@ -197,9 +239,9 @@
     // 删除留言
     function deleteMessage(id) {
         $.ajax({
-            url: './api/deleteMessage.php',
+            url: './api/editMessage.php',
             type: 'POST',
-            data: { id: id },
+            data: { id: id, delete: 1 },  // 添加 delete 字段
             success: function(data) {
                 alert(data); // 显示从后端返回的消息
                 loadMessages(); // 重新加载留言
@@ -209,7 +251,6 @@
             }
         });
     }
-
 
     // 准备新增留言
     function prepareAddMessage() {

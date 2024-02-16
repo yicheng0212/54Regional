@@ -3,24 +3,40 @@ include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $content = $_POST['content'];
-    $display_email = isset($_POST['display_email']) ? 1 : 0;
-    $display_phone = isset($_POST['display_phone']) ? 1 : 0;
 
-    echo "接收到的数据：ID - $id, Name - $name, Email - $email, Phone - $phone, Content - $content, Display Email - $display_email, Display Phone - $display_phone";
-    // 更新留言信息
-    $stmt = $conn->prepare("UPDATE messages SET name = ?, email = ?, phone = ?, content = ?, display_email = ?, display_phone = ?, updated_at = NOW() WHERE id = ?");
-    $stmt->bind_param("ssssiii", $name, $email, $phone, $content, $display_email, $display_phone, $id);
-    if ($stmt->execute()) {
-        echo "留言已成功編輯";
+    if (isset($_POST['delete']) && $_POST['delete'] == 1) {
+        $stmt = $conn->prepare("UPDATE messages SET content = '此留言已被删除', deleted_at = NOW() WHERE id = ?");
+        $stmt->execute([$id]);
     } else {
-        echo "錯誤: " . $stmt->error;
+        $fieldsToUpdate = [
+            'name' => $_POST['name'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'phone' => $_POST['phone'] ?? '',
+            'content' => $_POST['content'] ?? '',
+            'display_email' => isset($_POST['display_email']) ? 1 : 0,
+            'display_phone' => isset($_POST['display_phone']) ? 1 : 0
+        ];
+        if (!empty($_POST['admin_response'])) {
+            $fieldsToUpdate['admin_response'] = $_POST['admin_response'];
+        }
+        $setParts = [];
+        foreach ($fieldsToUpdate as $field => $value) {
+            $setParts[] = "$field = ?";
+        }
+        $sql = "UPDATE messages SET " . implode(', ', $setParts) . ", updated_at = NOW() WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $fieldsToUpdate['id'] = $id;
+        $stmt->execute(array_values($fieldsToUpdate));
+    }
+
+    if ($stmt) {
+        echo isset($_POST['delete']) && $_POST['delete'] == 1 ? "留言已删除" : "留言已成功编辑";
+    } else {
+        echo "操作失败：" . $conn->error;
     }
 
     $stmt->close();
 }
 
 $conn->close();
+?>
