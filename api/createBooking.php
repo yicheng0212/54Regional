@@ -1,7 +1,7 @@
 <?php
 include "db.php";
 
-// 提取数据
+
 $selectedRooms = $data['selectedRooms'] ?? null;
 $name = $data['name'] ?? null;
 $email = $data['email'] ?? null;
