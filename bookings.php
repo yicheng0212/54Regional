@@ -5,9 +5,10 @@
     <title>訪客訂房</title>
     <?php include_once "link.php";?>
 </head>
-<body>
+<body class="bg-warning">
+<div id="app" class="container">
 <?php include_once "header.php";?>
-<div id="app" class="container mt-5">
+    <div class="card p-3 shadow bg-light">
     <div v-if="step === 1">
         <h3>選擇日期</h3>
         <Calendar @update-date-range="updateDateRange"></Calendar>
@@ -66,6 +67,7 @@
         <textarea v-model="remarks" placeholder="備註" class="form-control mb-2"></textarea>
         <button class="btn btn-success" @click="submitBooking">確認預定</button>
     </div>
+</div>
 </div>
 
 <script>

@@ -5,11 +5,13 @@
     <title>登入</title>
     <?php include_once "link.php";?>
 </head>
-<body>
+<body class="bg-warning">
+<div class="container">
 <?php include_once "header.php"; ?>
-<div class="d-flex justify-content-center align-items-center min-vh-100">
+<div class="col-6 offset-3 mt-5">
+<div class="card d-flex justify-content-center align-items-center p-3 shadow bg-light">
     <div class="container">
-        <form id="loginForm" class="col-4 offset-4">
+        <form id="loginForm">
             <h2 class="text-center">網站管理--登入</h2>
             <div class="form-group">
                 <label for="username">帳號:</label>
@@ -29,6 +31,8 @@
             <button type="submit" class="btn btn-secondary btn-lg btn-block">送出</button>
         </form>
     </div>
+</div>
+</div>
 </div>
 
 <script>

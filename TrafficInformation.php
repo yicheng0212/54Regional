@@ -6,9 +6,10 @@
     <title>交通資訊</title>
     <?php include "link.php";?>
 </head>
-<body>
+<body class="bg-warning">
+<div class="container">
 <?php include "header.php";?>
-<div class="container mt-5">
+    <div class="card p-3 shadow bg-light">
     <!-- 即時交通狀況 -->
     <div class="alert alert-info">
         <h3>即時交通狀況</h3>
@@ -53,6 +54,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 <script>
     $("#routeForm").submit(function(event) {

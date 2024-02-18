@@ -1,6 +1,6 @@
 <?php
 include 'db.php';
-
+header('Content-Type: application/json');
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     $id = $_GET['id'];
 

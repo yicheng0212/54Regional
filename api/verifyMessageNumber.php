@@ -1,6 +1,6 @@
 <?php
 include 'db.php';
-
+header('Content-Type: application/json');
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
     $messageNumber = $_POST['messageNumber'];

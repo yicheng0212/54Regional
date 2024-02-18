@@ -1,5 +1,4 @@
-<div class="container mt-4">
-    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+ <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -52,7 +51,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <div id="messageList" class="mt-4">
         <!-- 留言卡片將透過 AJAX 載入 -->
@@ -103,9 +101,9 @@
                             html += `<div class='alert alert-secondary mt-3'>管理者回覆: ${message.admin_response}</div>`;
                         }
 
-                        html += `<button onclick='editMessage(${message.id})' class='btn btn-primary mt-3'>编辑</button>`;
-                        html += `<button onclick='topMessage(${message.id})' class='btn btn-success mt-3'>置頂</button>`;
-                        html += `<button onclick='deleteMessage(${message.id})' class='btn btn-danger mt-3'>刪除</button>`;
+                        html += `<button onclick='editMessage(${message.id})' class='btn btn-primary mt-3 m-1'>编辑</button>`;
+                        html += `<button onclick='topMessage(${message.id})' class='btn btn-success mt-3 m-1'>置頂</button>`;
+                        html += `<button onclick='deleteMessage(${message.id})' class='btn btn-danger mt-3 m-1'>刪除</button>`;
                     } else {
                         // 顯示已刪除的留言
                         html += `<h5 class='card-title'>${message.name}</h5>`;

@@ -1,25 +1,39 @@
-<div id="app" class="container mt-5">
+<div id="app">
     <!-- 訂房訂單展示 -->
-    <div class="row">
-        <div class="col-md-4 mb-3" v-for="booking in bookings" :key="booking.bookingNumber">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">訂房編號：{{ booking.bookingNumber }}</h5>
-                    <p class="card-text">房間編號：{{ booking.roomNumber }}</p>
-                    <p class="card-text">姓名：{{ booking.name }}</p>
-                    <p class="card-text">電話：{{ booking.phone }}</p>
-                    <p class="card-text">E-mail：{{ booking.email }}</p>
-                    <p class="card-text">入住第一晚的日期：{{ booking.checkInDate }}</p>
-                    <p class="card-text">入住最後一晚的日期：{{ booking.checkOutDate }}</p>
-                    <p class="card-text">備註：{{ booking.remarks }}</p>
-                    <p class="card-text">總金額：{{ booking.totalPrice }}</p>
-                    <p class="card-text">需付訂金：{{ booking.deposit }}</p>
-                    <button class="btn btn-primary" @click="showEditModal(booking)">編輯</button>
-                    <button class="btn btn-danger" @click="deleteBooking(booking.id)">刪除</button>
-                </div>
-            </div>
-        </div>
-
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th>訂房編號</th>
+                <th>房間編號</th>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>E-mail</th>
+                <th>入住期間</th>
+                <th>備註</th>
+                <th>總金額</th>
+                <th>需付訂金</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="booking in bookings" :key="booking.bookingNumber">
+                <td>{{ booking.bookingNumber }}</td>
+                <td>{{ booking.roomNumber }}</td>
+                <td>{{ booking.name }}</td>
+                <td>{{ booking.phone }}</td>
+                <td>{{ booking.email }}</td>
+                <td>{{ booking.checkInDate }}～<br>{{ booking.checkOutDate }}</td>
+                <td>{{ booking.remarks }}</td>
+                <td>{{ booking.totalPrice }}</td>
+                <td>{{ booking.deposit }}</td>
+                <td>
+                    <button class="btn btn-outline-secondary btn-sm m-1" @click="showEditModal(booking)">編輯</button>
+                    <button class="btn btn-outline-danger btn-sm m-1" @click="deleteBooking(booking.id)">刪除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- 編輯訂房訂單模態框 -->
