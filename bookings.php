@@ -18,7 +18,7 @@
     <div v-if="step === 2">
         <h3>選擇房間數量</h3>
         <div class="mt-3">
-            <label for="roomCount" class="form-label">房間數量:</label>
+            <label for="roomCount" class="col-form-label">房間數量:</label>
             <select id="roomCount" class="form-select" v-model="selectedRoomCount">
                 <option v-for="count in maxRoomCount" :value="count">{{ count }}</option>
             </select>
