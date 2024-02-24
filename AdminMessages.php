@@ -1,51 +1,57 @@
-<div class="container mt-4">
-    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+<div id="app" class="container">
+    <?php include_once "header.php"; ?>
+
+    <div class="d-flex align-items-center justify-content-center">
+        <h2 class="mb-0">訪客留言管理</h2>
+        <button type="button" class="btn btn-primary ml-2" @click="showAddMessageModal">新增留言</button>
+    </div>
+
+    <!-- Modal for Adding and Editing Messages -->
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal">留言</h5>
+                    <h5 class="modal-title" id="modalLabel">留言</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="messageForm" enctype="multipart/form-data">
-                        <input type="hidden" id="messageId" name="id">
+                    <form @submit.prevent="handleSubmit">
+                        <input type="hidden" v-model="formData.id">
                         <div class="form-group">
                             <label for="name">姓名:</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" v-model="formData.name" required>
                         </div>
                         <div class="form-group">
                             <label for="messageNumber">留言編號 (4位數字):</label>
-                            <input type="text" class="form-control" id="messageNumber" name="messageNumber" pattern="\d{4}" required>
+                            <input type="text" class="form-control" v-model="formData.messageNumber" pattern="\d{4}" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
-                            <input type="email" class="form-control" id="email" name="email">
+                            <input type="email" class="form-control" v-model="formData.email">
                         </div>
                         <div class="form-group">
-                            <label for="phone">連絡電話:</label>
-                            <input type="number" class="form-control" id="phone" name="phone">
+                            <label for="phone">聯絡電話:</label>
+                            <input type="number" class="form-control" v-model="formData.phone">
                         </div>
                         <div class="form-group">
                             <label for="content">留言內容:</label>
-                            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                            <textarea class="form-control" v-model="formData.content" rows="3" required></textarea>
                         </div>
                         <div class="form-group">
                             <label for="image">圖片上傳:</label>
-                            <input type="file" class="form-control-file" id="image" name="image">
+                            <input type="file" class="form-control-file" ref="image" @change="handleFileUpload">
                         </div>
+                        <div id="editOptions" v-if="editMode">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="displayEmail" name="display_email">
-                                <label class="form-check-label" for="displayEmail">Email</label>
+                                <input type="checkbox" class="form-check-input" v-model="formData.displayEmail" checked>
+                                <label class="form-check-label" for="displayEmail">顯示Email</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="displayPhone" name="display_phone">
-                                <label class="form-check-label" for="displayPhone">電話</label>
+                                <input type="checkbox" class="form-check-input" v-model="formData.displayPhone" checked>
+                                <label class="form-check-label" for="displayPhone">顯示電話</label>
                             </div>
-                        <div class="form-group">
-                            <label for="admin_response">留言回覆:</label>
-                            <textarea class="form-control" id="admin_response" name="admin_response" rows="3"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">提交</button>
                     </form>
@@ -54,167 +60,165 @@
         </div>
     </div>
 
+    <!-- Message List -->
     <div id="messageList" class="mt-4">
-        <!-- 留言卡片將透過 AJAX 載入 -->
+        <div class='card mb-3' v-for="message in messages" :key="message.id">
+            <div class='card-body bg-light' v-if="message.deleted_at === null">
+                <h4 class='card-title'>{{ message.name }}</h4>
+                <div v-if="message.is_top == 1" class="badge badge-success">置頂</div>
+                <p class='card-text'>留言內容: {{ message.content }}</p>
+                <img v-if="message.image_path" :src="message.image_path" class="img-fluid" alt="留言圖片">
+                <p class='card-text'>
+                    <small class='text-muted'>
+                        發布於 {{ message.created_at }}
+                        <span v-if="message.updated_at && message.updated_at !== message.created_at">，編輯於 {{ message.updated_at }}</span>
+                    </small>
+                </p>
+                <p v-if="message.displayEmail == 1" class='card-text'>Email: {{ message.email }}</p>
+                <p v-if="message.displayPhone == 1" class='card-text'>電話: {{ message.phone }}</p>
+
+                <button @click="prepareEditOrDelete(message, 'edit')" class='btn btn-primary m-1'>編輯</button>
+                <button @click="prepareEditOrDelete(message, 'delete')" class='btn btn-danger m-1'>刪除</button>
+                <button @click="topMessage(message.id)" class='btn btn-warning m-1'>置頂</button>
+            </div>
+            <div class='card-body bg-light' v-else>
+                <h4 class='card-title'>{{ message.name }}</h4>
+                <p class='card-text'>此留言已被刪除。</p>
+                <button @click="prepareEditOrDelete(message, 'delete')" class='btn btn-danger m-1'>刪除</button>
+                <p class='card-text'><small class='text-muted'>發布於 {{ message.created_at }}，刪除於 {{ message.deleted_at }}</small></p>
+            </div>
+        </div>
     </div>
-</div>
-<script>
-    //加載留言
-    $(document).ready(function() {
-        loadMessages();
-    });
-    //顯示留言
-    function loadMessages() {
-        $.ajax({
-            url: './api/displayMessage.php',
-            type: 'GET',
-            dataType: 'json',
-            success: function(messages) {
-                let html = '';
-                messages.forEach(function(message) {
-                    html += `<div class='card mb-3'><div class='card-body'>`;
-                    if (message.deleted_at === null) {
-                        // 正常顯示留言
-                        html += `<h5 class='card-title'>${message.name}</h5>`;
-                        if(message.is_top === "1") {
-                            html += `<span class="badge badge-success">置頂</span> `;
-                        }
-                        html += `<p class='card-text'>留言內容:${message.content.replace(/\n/g, "<br>")}</p>`;
 
-                        if (message.image_path) {
-                            html += `<img src='${message.image_path}' class='card-img-top mb-3' style='max-width: 300px; height: auto;' alt='圖片'>`;
-                        }
-
-                        if (message.display_email === "1") {
-                            html += `<p class='card-text'>Email: ${message.email}</p>`;
-                        }
-                        if (message.display_phone === "1") {
-                            html += `<p class='card-text'>電話: ${message.phone}</p>`;
-                        }
-
-                        html += `<p class='card-text'><small class='text-muted'>發佈於 ${message.created_at}`;
-                        if (message.updated_at !== message.created_at) {
-                            html += `，修改於 ${message.updated_at}`;
-                        }
-                        html += `</small></p>`;
-
-                        // 檢查並顯示管理者回覆
-                        if (message.admin_response) {
-                            html += `<div class='alert alert-secondary mt-3'>管理者回覆: ${message.admin_response}</div>`;
-                        }
-
-                        html += `<button onclick='editMessage(${message.id})' class='btn btn-primary mt-3'>编辑</button>`;
-                        html += `<button onclick='topMessage(${message.id})' class='btn btn-success mt-3'>置頂</button>`;
-                        html += `<button onclick='deleteMessage(${message.id})' class='btn btn-danger mt-3'>刪除</button>`;
-                    } else {
-                        // 顯示已刪除的留言
-                        html += `<h5 class='card-title'>${message.name}</h5>`;
-                        html += `<p class='card-text'>此留言已被刪除。</p>`;
-                        html += `<p class='card-text'><small class='text-muted'>發佈於 ${message.created_at}，刪除於 ${message.deleted_at}</small></p>`;
-                    }
-                    html += `</div></div>`;
-                });
-                $('#messageList').html(html);
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    messages: [],
+                    formData: {
+                        id: '',
+                        name: '',
+                        messageNumber: '',
+                        email: '',
+                        phone: '',
+                        content: '',
+                        displayEmail: false,
+                        displayPhone: false,
+                        image: null,
+                    },
+                    editMode: false,
+                };
             },
-            error: function() {
-                alert('無法加載留言');
-            }
-        });
-    }
-    // 编辑留言
-    function editMessage(id) {
-        $.ajax({
-            url: './api/getMessage.php',
-            type: 'GET',
-            data: { id: id },
-            success: function(data) {
-                var message = JSON.parse(data);
-
-                // 填充表单数据
-                $('#name').val(message.name);
-                $('#messageNumber').val(message.messageNumber);
-                $('#email').val(message.email);
-                $('#phone').val(message.phone);
-                $('#content').val(message.content);
-                $('#messageId').val(message.id);
-                $('#admin_response').val(message.admin_response);
-
-                // 显示模态框进行编辑
-                $('#messageModal').modal('show');
-            },
-            error: function() {
-                alert("加载留言时发生错误");
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        // 处理编辑留言表单提交
-        $('#messageForm').on('submit', function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: './api/editMessage.php', // 直接指定编辑操作的URL
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    alert(response); // 显示从后端返回的消息
-                    $('#messageModal').modal('hide'); // 隐藏模态框
-                    loadMessages(); // 重新加载留言
+            methods: {
+                loadMessages() {
+                    $.ajax({
+                        url: './api/displayMessage.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: (messages) => {
+                            this.messages = messages;
+                        },
+                        error: () => {
+                            alert('無法加載留言');
+                        }
+                    });
                 },
-                error: function() {
-                    alert("编辑留言时发生错误");
-                }
-            });
-        });
-    });
-
-    // 删除留言的函数
-    function deleteMessage(id) {
-        if (confirm("確定要刪除這條留言嗎？")) {
-            $.ajax({
-                url: './api/deleteMessage.php', // 指向您的删除脚本的路径
-                type: 'POST',
-                data: { id: id },
-                success: function(response) {
-                    var result = JSON.parse(response);
-                    if (result.message) {
-                        alert(result.message); // 显示成功消息
-                    } else if (result.error) {
-                        alert(result.error); // 显示错误消息
-                    }
-                    loadMessages(); // 重新加载留言列表
+                showAddMessageModal() {
+                    this.editMode = false;
+                    this.resetForm();
+                    $('#messageModal').modal('show');
                 },
-                error: function() {
-                    alert("请求失败，请稍后再试。");
-                }
-            });
-        }
-    }
-
-    function topMessage(id) {
-        $.ajax({
-            url: './api/topMessage.php',
-            type: 'POST',
-            data: {
-                id: id,
-                action: 'top'
+                prepareEditOrDelete(message, action) {
+                    if (action === 'edit') {
+                        this.editMode = true;
+                        this.formData = {
+                            ...message,
+                            displayEmail: message.display_email === '1',
+                            displayPhone: message.display_phone === '1',
+                        };
+                        $('#messageModal').modal('show');
+                    } else if (action === 'delete') {
+                        this.deleteMessage(message.id);
+                    }
+                },
+                deleteMessage(id) {
+                    if (confirm('確定要刪除這條留言嗎？')) {
+                        $.ajax({
+                            url: './api/deleteMessage.php',
+                            type: 'POST',
+                            data: { id },
+                            success: () => {
+                                alert('留言已刪除');
+                                this.loadMessages();
+                            },
+                            error: () => {
+                                alert('刪除留言時發生錯誤');
+                            }
+                        });
+                    }
+                },
+                topMessage(id) {
+                    $.ajax({
+                        url: './api/topMessage.php',
+                        type: 'POST',
+                        data: { id },
+                        success: () => {
+                            alert('留言已置頂');
+                            this.loadMessages();
+                        },
+                        error: () => {
+                            alert('置頂留言時發生錯誤');
+                        }
+                    });
+                },
+                handleSubmit() {
+                    let formData = new FormData();
+                    Object.keys(this.formData).forEach(key => {
+                        if (key === 'displayEmail' || key === 'displayPhone') {
+                            formData.append(key, this.formData[key] ? '1' : '0');
+                        } else {
+                            formData.append(key, this.formData[key]);
+                        }
+                    });
+                    if (this.formData.image) {
+                        formData.append('image', this.formData.image);
+                    }
+                    const url = this.editMode ? './api/editMessage.php' : './api/createMessage.php';
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: () => {
+                            alert('留言已提交');
+                            $('#messageModal').modal('hide');
+                            this.loadMessages();
+                        },
+                        error: () => {
+                            alert('提交留言時發生錯誤');
+                        }
+                    });
+                },
+                resetForm() {
+                    this.formData = {
+                        id: '',
+                        name: '',
+                        messageNumber: '',
+                        email: '',
+                        phone: '',
+                        content: '',
+                        displayEmail: false,
+                        displayPhone: false,
+                        image: null,
+                    };
+                },
+                handleFileUpload(event) {
+                    this.formData.image = event.target.files[0];
+                },
             },
-            success: function(response) {
-                var result = JSON.parse(response);
-                if (result.message) {
-                    alert(result.message);
-                    loadMessages();
-                } else if (result.error) {
-                    alert(result.error);
-                }
-            },
-            error: function() {
-                alert("置頂留言請求失敗，請稍後再試。");
+            mounted() {
+                this.loadMessages();
             }
-        });
-    }
-</script>
+        }).mount('#app');
+    </script>

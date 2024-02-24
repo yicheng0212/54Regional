@@ -1,7 +1,8 @@
 <?php
 include "db.php";
+header('Content-Type:Application/json');
 
-
+$data = json_decode(file_get_contents('php://input'), true);
 $selectedRooms = $data['selectedRooms'] ?? null;
 $name = $data['name'] ?? null;
 $email = $data['email'] ?? null;

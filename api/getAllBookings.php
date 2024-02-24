@@ -1,6 +1,6 @@
 <?php
 require 'db.php';
-
+header('Content-Type:Application/json');
 $sql = "SELECT * FROM bookings";
 $result = $conn->query($sql);
 

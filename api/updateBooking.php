@@ -1,7 +1,6 @@
 <?php
 include 'db.php';
 
-// 确保正确解析了请求体中的JSON数据
 $data = json_decode(file_get_contents('php://input'), true);
 
 function calculateTotalPrice($checkInDate, $checkOutDate) {

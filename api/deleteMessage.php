@@ -1,6 +1,6 @@
 <?php
 include 'db.php';
-
+header('Content-Type:Application/json');
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
     $id = $_POST['id'];
     $stmt = $conn->prepare("DELETE FROM messages WHERE id = ?");

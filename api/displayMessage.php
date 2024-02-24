@@ -1,8 +1,8 @@
 <?php
 include 'db.php';
-
+header('Content-Type:Application/json');
 // 修改SQL語句，先按is_top降序排列，然後按created_at降序排列
-$sql = "SELECT id, name, messageNumber, email, phone, content, image_path, created_at, updated_at, deleted_at, display_email, display_phone, is_top, admin_response FROM messages ORDER BY is_top DESC, created_at DESC";
+$sql = "SELECT id, name, messageNumber, email, phone, content, image_path, created_at, updated_at, deleted_at, displayEmail, displayPhone, is_top, admin_response FROM messages ORDER BY is_top DESC, created_at DESC";
 $result = $conn->query($sql);
 
 $messages = [];
