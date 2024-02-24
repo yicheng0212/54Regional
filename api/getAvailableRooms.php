@@ -1,6 +1,6 @@
 <?php
 include "db.php";
-
+header('Content-Type:Application/json');
 $checkInDate = $data['checkInDate'] ?? null;
 $checkOutDate = $data['checkOutDate'] ?? null;
 

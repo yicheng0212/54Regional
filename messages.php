@@ -5,16 +5,16 @@
     <title>訪客留言</title>
     <?php include_once "link.php";?>
 </head>
-<body class="bg-warning">
-<div class="container">
+<body>
 <?php include_once "header.php";?>
+<div class="container mt-4">
+    <h2>訪客留言版</h2>
 
-        <div class="d-flex align-items-center justify-content-center">
-            <h2 class="mb-0">訪客留言列表</h2>
-            <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#messageModal" onclick="prepareAddMessage()">
-                新增留言
-            </button>
-        </div>
+    <!-- 新增留言按鈕 -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#messageModal" onclick="prepareAddMessage()">
+        新增留言
+    </button>
+
     <!-- 燈箱 (Modal) - 新增和編輯留言 -->
     <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -88,10 +88,10 @@
             success: function(messages) {
                 let html = '';
                 messages.forEach(function(message) {
-                    html += `<div class='card mb-3'><div class='card-body bg-light'>`;
+                    html += `<div class='card mb-3'><div class='card-body'>`;
                     if (message.deleted_at === null) {
                         // 正常顯示留言
-                        html += `<h4 class='card-title d-flex align-items-center justify-content-center bg-white' style="height: 150px;width: 150px;">${message.name}</h4>`;
+                        html += `<h5 class='card-title'>${message.name}</h5>`;
                         if(message.is_top === "1") {
                             html += `<span class="badge badge-success">置顶</span> `;
                         }

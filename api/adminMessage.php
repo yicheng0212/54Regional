@@ -1,5 +1,6 @@
 <?php
 include "db.php";
+header('Content-Type:application/json');
 
 $action = $_POST['action'] ?? '';
 $id = $_POST['id'] ?? 0;

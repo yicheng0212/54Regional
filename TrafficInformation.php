@@ -57,19 +57,20 @@
 </div>
 </div>
 <script>
-    $("#routeForm").submit(function(event) {
-        event.preventDefault();
+    $(document).ready(function() {
+        $("#routeForm").submit(function(event) {
+            event.preventDefault();
+            const start = $("#start").val();
+            const end = $("#end").val();
+            const result = "從 " + start + " 到 " + end + " 的最佳路線為...";
+            $("#routeResult").html(result);
+        });
 
-        var start = $("#start").val();
-        var end = $("#end").val();
-        var result = "從 " + start + " 到 " + end + " 的最佳路線為...";
-        $("#routeResult").html(result);
-    });
-    $("#feedbackForm").submit(function(event) {
-        event.preventDefault();
-
-        var feedback = $("#feedback").val();
-        alert("感謝您的反饋：" + feedback);
+        $("#feedbackForm").submit(function(event) {
+            event.preventDefault();
+            const feedback = $("#feedback").val();
+            alert("感謝您的反饋：" + feedback);
+        });
     });
 </script>
 </body>

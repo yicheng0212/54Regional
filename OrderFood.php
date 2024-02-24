@@ -6,10 +6,9 @@
     <title>訪客訂餐</title>
     <?php include "link.php";?>
 </head>
-<body class="bg-warning">
-<div id="app" class="container">
+<body>
 <?php include "header.php";?>
-    <div class="card p-3 shadow bg-light">
+<div id="app" class="container mt-4">
     <h2 class="mb-4">訪客訂餐</h2>
 
     <div>
@@ -38,7 +37,6 @@
         <h2>確認訂單</h2>
         <button class="btn btn-success" @click="confirmOrder">確定訂單</button>
     </div>
-</div>
 </div>
 <script>
     Vue.createApp({
