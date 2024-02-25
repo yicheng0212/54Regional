@@ -115,7 +115,7 @@
                         email: '',
                         phone: '',
                         content: '',
-                        image: null,
+                        image: null, // 存储文件对象
                         displayEmail: false,
                         displayPhone: false,
                     },
@@ -171,7 +171,7 @@
                         type: 'GET',
                         success: (message) => {
                             this.editMode = true;
-                            this.formData = { ...message, displayEmail: message.display_email === '1', displayPhone: message.display_phone === '1' }; // 将字符串 '1' 或 '0' 转换为布尔值
+                            this.formData = { ...message, image: null, displayEmail: message.display_email === '1', displayPhone: message.display_phone === '1' }; // 注意，这里不直接加载图片
                             $('#messageModal').modal('show');
                         },
                         error: () => {
@@ -194,29 +194,23 @@
                     });
                 },
                 handleSubmit() {
-                    let formData = new FormData();
-                    Object.keys(this.formData).forEach(key => {
-                        formData.append(key, this.formData[key]);
-                    });
-                    if (this.formData.image) {
-                        formData.append('image', this.formData.image);
-                    }
-                    formData.set('displayEmail', this.formData.displayEmail ? '1' : '0');
-                    formData.set('displayPhone', this.formData.displayPhone ? '1' : '0');
+                    const data = {
+                        ...this.formData,
+                        image: this.formData.image ? this.formData.image : ''
+                    };
 
                     const url = this.editMode ? './api/editMessage.php' : './api/createMessage.php';
+
                     $.ajax({
                         url: url,
                         type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: () => {
+                        data: data,
+                        success: function(response) {
                             alert('留言已提交');
                             $('#messageModal').modal('hide');
                             this.loadMessages();
-                        },
-                        error: () => {
+                        }.bind(this),
+                        error: function() {
                             alert('提交留言时发生错误');
                         }
                     });
@@ -235,13 +229,15 @@
                     };
                 },
                 handleFileUpload(event) {
-                    this.formData.image = event.target.files[0];
+                    this.formData.image = event.target.files.length > 0 ? event.target.files[0].name : '';
                 },
             },
             mounted() {
                 this.loadMessages();
-            }
+            },
         }).mount('#app');
     </script>
+
+
 </body>
 </html>
