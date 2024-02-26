@@ -1,5 +1,4 @@
 <div id="app">
-    <?php include_once "header.php"; ?>
 
     <div class="d-flex align-items-center justify-content-center">
         <h2 class="mb-0">訪客留言管理</h2>
