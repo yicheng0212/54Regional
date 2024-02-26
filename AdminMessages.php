@@ -1,10 +1,5 @@
 <div id="app">
 
-    <div class="d-flex align-items-center justify-content-center">
-        <h2 class="mb-0">訪客留言管理</h2>
-        <button type="button" class="btn btn-primary ml-2" @click="showAddMessageModal">新增留言</button>
-    </div>
-
     <!-- Modal for Adding and Editing Messages -->
     <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -105,7 +100,6 @@
                         displayPhone: false,
                         image: null,
                     },
-                    editMode: false,
                 };
             },
             methods: {
@@ -175,11 +169,8 @@
                         ...this.formData,
                         image: this.formData.image ? this.formData.image : ''
                     };
-
-                    const url = this.editMode ? './api/editMessage.php' : './api/createMessage.php';
-
                     $.ajax({
-                        url: url,
+                        url: './api/editMessage.php',
                         type: 'POST',
                         data: data,
                         success: function(response) {
