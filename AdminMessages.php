@@ -1,4 +1,4 @@
-<div id="app" class="container">
+<div id="app">
     <?php include_once "header.php"; ?>
 
     <div class="d-flex align-items-center justify-content-center">
