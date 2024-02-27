@@ -35,10 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $params[] = $id;
     }
 
-    if (!$stmt) {
-        echo json_encode(['status' => 'error', 'message' => "操作失败：" . $conn->error]);
-        exit();
-    }
 
     $types = str_repeat("s", count($params) - 1) . "i";
     $stmt->bind_param($types, ...$params);
