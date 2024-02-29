@@ -1,18 +1,16 @@
 <?php
 include 'db.php';
+header('Content-Type: application/json');
 
-if(isset($data['id'])) { // 现在我们根据id来定位记录
+$id = $_POST['id'] ?? null;
+
+if ($id) {
     $stmt = $conn->prepare("DELETE FROM bookings WHERE id = ?");
-    $stmt->bind_param("i", $data['id']);
+    $stmt->bind_param("i", $id);
 
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "訂單刪除成功"], JSON_UNESCAPED_UNICODE);
-    } else {
-        echo json_encode(["message" => "訂單刪除失敗"], JSON_UNESCAPED_UNICODE);
-    }
+    $success = $stmt->execute();
+    $message = $success ? "訂單刪除成功" : "訂單刪除失敗";
+    echo json_encode(["message" => $message], JSON_UNESCAPED_UNICODE);
     $stmt->close();
-} else {
-    echo json_encode(["message" => "需要訂單編號"], JSON_UNESCAPED_UNICODE);
 }
-
 $conn->close();

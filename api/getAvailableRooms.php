@@ -7,7 +7,6 @@ $checkOutDate = $data['checkOutDate'] ?? null;
 $allRooms = range(1, 8);
 $availableRooms = [];
 
-// 初始化所有房间为可预订
 foreach ($allRooms as $roomNumber) {
     $availableRooms[$roomNumber] = ['roomNumber' => $roomNumber, 'available' => true];
 }

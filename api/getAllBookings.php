@@ -10,8 +10,6 @@ if ($result->num_rows > 0) {
         $bookings[] = $row;
     }
     echo json_encode($bookings);
-} else {
-    echo json_encode(["message" => "沒有找到任何訂單"], JSON_UNESCAPED_UNICODE);
 }
 
 $conn->close();

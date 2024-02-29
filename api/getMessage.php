@@ -1,7 +1,6 @@
 <?php
 include 'db.php';
 header('Content-Type: application/json');
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     $id = $_GET['id'];
 
     $stmt = $conn->prepare("SELECT id, name, messageNumber, email, phone, content, displayEmail, displayPhone, is_top, admin_response FROM messages WHERE id = ?");
@@ -16,7 +15,5 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
         echo json_encode(["message" => "沒有留言"]);
     }
 
-    $stmt->close();
-}
-
+$stmt->close();
 $conn->close();

@@ -3,7 +3,6 @@ include 'db.php';
 
 header('Content-Type: application/json');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
 
     if (isset($_POST['delete']) && $_POST['delete'] == 1) {
@@ -47,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $stmt->close();
-}
 
 $conn->close();
 ?>

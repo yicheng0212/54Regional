@@ -2,8 +2,6 @@
 session_start();
 include './db.php';
 
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $captcha = $_POST['captcha'];
@@ -30,6 +28,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "圖形驗證碼錯誤";
     }
-}
 
 $conn->close();
