@@ -59,21 +59,19 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        $("#routeForm").submit(function(event) {
-            event.preventDefault();
-            const start = $("#start").val();
-            const end = $("#end").val();
-            const result = "從 " + start + " 到 " + end + " 的最佳路線為...";
-            $("#routeResult").html(result);
-        });
-
-        $("#feedbackForm").submit(function(event) {
-            event.preventDefault();
-            const feedback = $("#feedback").val();
-            alert("感謝您的反饋：" + feedback);
-        });
+$(document).ready(function() {
+    $("#routeForm").submit(function(event) {
+        event.preventDefault();
+        const start = $("#start").val();
+        const end = $("#end").val();
+        $("#routeResult").html(`從 ${start} 到 ${end} 的最佳路線為...`);
     });
+
+    $("#feedbackForm").submit(function(event) {
+        event.preventDefault();
+        alert("感謝您的反饋：" + $("#feedback").val());
+    });
+});
 </script>
 </body>
 </html>
