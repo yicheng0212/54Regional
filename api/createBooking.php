@@ -38,7 +38,7 @@ function getBookingNumber($conn, $checkInDate) {
     $stmt = $conn->prepare("SELECT COUNT(*) + 1 AS number FROM bookings WHERE DATE(checkInDate) = ?");
     $stmt->bind_param("s", $checkInDate);
     $stmt->execute();
-    $sequence = $stmt->get_result()->fetch_assoc()['number'];
+    $number = $stmt->get_result()->fetch_assoc()['number'];
     $stmt->close();
-    return date('Ymd', strtotime($checkInDate)) . sprintf('%04d', $sequence);
+    return date('Ymd', strtotime($checkInDate)) . sprintf('%04d', $number);
 }
