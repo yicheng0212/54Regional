@@ -35,13 +35,10 @@ function calculateTotalPrice($checkInDate, $checkOutDate) {
 }
 
 function getBookingNumber($conn, $checkInDate) {
-    $datePart = date('Ymd', strtotime($checkInDate));
-    $query = "SELECT COUNT(*) as totalBookings FROM bookings WHERE DATE(checkInDate) = ?";
-    $stmt = $conn->prepare($query);
+    $stmt = $conn->prepare("SELECT COUNT(*) + 1 AS sequence FROM bookings WHERE DATE(checkInDate) = ?");
     $stmt->bind_param("s", $checkInDate);
     $stmt->execute();
-    $result = $stmt->get_result()->fetch_assoc();
-    $sequence = $result['totalBookings'] + 1;
+    $sequence = $stmt->get_result()->fetch_assoc()['sequence'];
     $stmt->close();
-    return $datePart . sprintf('%04d', $sequence);
+    return date('Ymd', strtotime($checkInDate)) . sprintf('%04d', $sequence);
 }
