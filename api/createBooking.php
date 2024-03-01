@@ -35,7 +35,7 @@ function calculateTotalPrice($checkInDate, $checkOutDate) {
 }
 
 function generateBookingNumber($conn, $checkInDate) {
-    $datePart = str_replace('-', '', $checkInDate);
+    $datePart = date('Ymd', strtotime($checkInDate));
     $query = "SELECT COUNT(*) as totalBookings FROM bookings WHERE DATE(checkInDate) = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $checkInDate);
