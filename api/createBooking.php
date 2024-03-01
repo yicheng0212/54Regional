@@ -14,7 +14,7 @@ $remarks = $data['remarks'] ?? '';
 
 $totalPrice = calculateTotalPrice($checkInDate, $checkOutDate);
 $deposit = $totalPrice * 0.3;
-$bookingNumber = generateBookingNumber($conn, $checkInDate);
+$bookingNumber = getBookingNumber($conn, $checkInDate);
 
 $sql = "INSERT INTO bookings (roomNumber, name, email, phone, checkInDate, checkOutDate, totalPrice, deposit, remarks, bookingNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
@@ -34,7 +34,7 @@ function calculateTotalPrice($checkInDate, $checkOutDate) {
     return max(1, $interval->days) * 5000;
 }
 
-function generateBookingNumber($conn, $checkInDate) {
+function getBookingNumber($conn, $checkInDate) {
     $datePart = date('Ymd', strtotime($checkInDate));
     $query = "SELECT COUNT(*) as totalBookings FROM bookings WHERE DATE(checkInDate) = ?";
     $stmt = $conn->prepare($query);
