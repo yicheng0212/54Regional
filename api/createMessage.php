@@ -2,7 +2,6 @@
 include 'db.php';
 header('Content-Type: application/json');
 
-    // 從 POST 數據中提取信息
     $name = $_POST['name'] ?? '';
     $messageNumber = $_POST['messageNumber'] ?? '';
     $email = $_POST['email'] ?? '';

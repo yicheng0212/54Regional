@@ -115,7 +115,7 @@
                         email: '',
                         phone: '',
                         content: '',
-                        image: null, // 存储文件对象
+                        image: null,
                         displayEmail: false,
                         displayPhone: false,
                     },
@@ -171,7 +171,7 @@
                         type: 'GET',
                         success: (message) => {
                             this.editMode = true;
-                            this.formData = { ...message, image: null, displayEmail: message.display_email === '1', displayPhone: message.display_phone === '1' }; // 注意，这里不直接加载图片
+                            this.formData = { ...message, image: null, displayEmail: message.display_email === '1', displayPhone: message.display_phone === '1' };
                             $('#messageModal').modal('show');
                         },
                         error: () => {
@@ -237,7 +237,5 @@
             },
         }).mount('#app');
     </script>
-
-
 </body>
 </html>

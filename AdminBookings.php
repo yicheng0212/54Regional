@@ -1,5 +1,4 @@
 <div id="app">
-    <!-- 訂房訂單展示 -->
     <div class="table-responsive">
         <table class="table">
             <thead class="thead-dark">
@@ -169,7 +168,7 @@
                         url: './api/deleteBooking.php',
                         method: 'POST',
                         contentType: 'application/json',
-                        data: JSON.stringify({ id }), // 正确引用id
+                        data: JSON.stringify({ id }),
                         success: (response) => {
                             this.fetchBookings();
                             alert('訂單刪除成功！');
