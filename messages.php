@@ -213,8 +213,8 @@
                         displayPhone: false,
                     };
                 },
-                handleFileUpload(event) {
-                    this.formData.image = event.target.files.length > 0 ? event.target.files[0].name : '';
+                handleFileUpload(e) {
+                    this.formData.image = e.target.files[0]?.name || '';
                 },
             },
             mounted() {
