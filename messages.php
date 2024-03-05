@@ -17,7 +17,7 @@
     </div>
 
     <!-- Modal for Adding and Editing Messages -->
-    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal fade" id="messageModal"  tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -76,26 +76,26 @@
         <div class='card mb-3' v-for="message in messages" :key="message.id">
             <div class='card-body bg-light' v-if="message.deleted_at === null">
                 <h4 class='card-title'>{{ message.name }}</h4>
-                <div v-if="message.is_top == 1" class="badge badge-success">置顶</div>
+                <div v-if="message.is_top == 1" class="badge badge-success">置頂</div>
                 <p class='card-text'>留言内容: {{ message.content }}</p>
-                <img v-if="message.image_path" :src="message.image_path" class="img-fluid" alt="留言图片">
+                <img v-if="message.image_path" :src="message.image_path" class="img-fluid">
                 <p class='card-text'>
                     <small class='text-muted'>
-                        发布于 {{ message.created_at }}
-                        <span v-if="message.updated_at && message.updated_at != message.created_at">，编辑于 {{ message.updated_at }}</span>
+                        發佈於{{ message.created_at }}
+                        <span v-if="message.updated_at && message.updated_at != message.created_at">，編輯於 {{ message.updated_at }}</span>
                     </small>
                 </p>
                 <p v-if="message.displayEmail == 1" class='card-text'>Email: {{ message.email }}</p>
-                <p v-if="message.displayPhone == 1" class='card-text'>电话: {{ message.phone }}</p>
-                <button @click="prepareEditOrDelete(message, 'edit')" class='btn btn-primary m-1'>编辑</button>
-                <button @click="prepareEditOrDelete(message, 'delete')" class='btn btn-danger m-1'>删除</button>
+                <p v-if="message.displayPhone == 1" class='card-text'>電話: {{ message.phone }}</p>
+                <button @click="prepareEditOrDelete(message, 'edit')" class='btn btn-primary m-1'>編輯</button>
+                <button @click="prepareEditOrDelete(message, 'delete')" class='btn btn-danger m-1'>刪除</button>
             </div>
             <div class='card-body bg-light' v-else>
                 <h4 class='card-title'>{{ message.name }}</h4>
-                <p class='card-text'>此留言已被删除。</p>
+                <p class='card-text'>{{ message.content }}</p>
                 <p class='card-text'>
                     <small class='text-muted'>
-                        发布于 {{ message.created_at }}，删除于 {{ message.deleted_at }}
+                        發佈於 {{ message.created_at }}，刪除於 {{ message.deleted_at }}
                     </small>
                 </p>
             </div>
@@ -131,9 +131,6 @@
                         success: (messages) => {
                             this.messages = messages;
                         },
-                        error: () => {
-                            alert('无法加载留言');
-                        }
                     });
                 },
                 showAddMessageModal() {
@@ -142,7 +139,7 @@
                     $('#messageModal').modal('show');
                 },
                 prepareEditOrDelete(message, action) {
-                    const messageNumber = prompt("请输入留言编号以进行验证:");
+                    const messageNumber = prompt("請輸入留言編號:");
                     if (messageNumber) {
                         $.ajax({
                             url: './api/verifyMessageNumber.php',
@@ -156,12 +153,9 @@
                                         this.deleteMessage(response.id);
                                     }
                                 } else {
-                                    alert("留言编号不正确");
+                                    alert("留言編號不正確");
                                 }
                             },
-                            error: () => {
-                                alert('验证留言编号时发生错误');
-                            }
                         });
                     }
                 },
@@ -171,12 +165,9 @@
                         type: 'GET',
                         success: (message) => {
                             this.editMode = true;
-                            this.formData = { ...message, image: null, displayEmail: message.display_email === '1', displayPhone: message.display_phone === '1' };
+                            this.formData = { ...message, image: null, displayEmail: message.displayEmail === '1', displayPhone: message.displayPhone === '1' };
                             $('#messageModal').modal('show');
                         },
-                        error: () => {
-                            alert('加载留言详情时发生错误');
-                        }
                     });
                 },
                 deleteMessage(id) {
@@ -185,12 +176,9 @@
                         type: 'POST',
                         data: { id: id, delete: '1' },
                         success: () => {
-                            alert('留言已删除');
+                            alert('留言已刪除');
                             this.loadMessages();
                         },
-                        error: () => {
-                            alert('删除留言时发生错误');
-                        }
                     });
                 },
                 handleSubmit() {
@@ -209,10 +197,7 @@
                             alert('留言已提交');
                             $('#messageModal').modal('hide');
                             this.loadMessages();
-                        }.bind(this),
-                        error: function() {
-                            alert('提交留言时发生错误');
-                        }
+                        }.bind(this)
                     });
                 },
                 resetForm() {

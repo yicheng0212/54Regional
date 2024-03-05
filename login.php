@@ -27,6 +27,8 @@
                 <button class="btn btn-sm btn-secondary" type="button" id="refresh_captcha">重新產生</button>
                 <input type="text" class="form-control" id="captcha" name="captcha" required>
             </div>
+
+
             <button type="reset" class="btn btn-outline-secondary btn-lg btn-block">重設</button>
             <button type="submit" class="btn btn-secondary btn-lg btn-block">送出</button>
         </form>
@@ -49,14 +51,11 @@
                 data: { username: username, password: password, captcha: captcha },
                 success: function(response) {
                     if (response === 'success') {
-                        window.location.href = 'admin.php'; // 登入成功，導向管理頁面
+                        window.location.href = 'admin.php';
                     } else {
-                        alert(response); // 顯示錯誤信息
+                        alert(response);
                     }
                 },
-                error: function() {
-                    alert('登入請求失敗，請稍後再試。');
-                }
             });
         });
 

@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $id = $_POST['id'];
 
 if (isset($_POST['delete']) && $_POST['delete'] == 1) {
-    $sql = "UPDATE messages SET content = '此留言已被删除', deleted_at = NOW() WHERE id = ?";
+    $sql = "UPDATE messages SET content = '此留言已被刪除', deleted_at = NOW() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
 } else {

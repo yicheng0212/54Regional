@@ -72,7 +72,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const { createApp, ref, reactive, toRefs, watch, computed } = Vue;
+        const { createApp, ref, reactive, toRefs, computed, watch } = Vue;
 
         const Calendar = {
             emits: ['updateDateRange'],
@@ -133,7 +133,6 @@
                     calculateDays();
                 };
 
-
                 const changeMonth = (direction) => {
                     if (direction === 'prev') {
                         state.currentMonth = state.currentMonth === 0 ? 11 : state.currentMonth - 1;
@@ -150,34 +149,34 @@
                 return { ...toRefs(state), selectDate, changeMonth };
             },
             template: `
-    <div>
-        <div class="mb-3 text-center">
-            <button @click="changeMonth('prev')" class="btn btn-info">&lt; 上個月</button>
-            <span class="mx-2">{{ currentYear }}年 {{ currentMonth + 1 }}月</span>
-            <button @click="changeMonth('next')" class="btn btn-info">下個月 &gt;</button>
-        </div>
-        <div class="row text-center">
-            <div class="col-12">
-                <div class="d-flex flex-wrap border-bottom">
-                    <div class="p-2 flex-fill" style="width: 14.28%;">日</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">一</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">二</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">三</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">四</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">五</div>
-                    <div class="p-2 flex-fill" style="width: 14.28%;">六</div>
-                </div>
-                <div class="d-flex flex-wrap">
-                    <div v-for="day in days" :key="day.date" class="p-2 flex-fill" style="width: 14.28%;">
-                        <button v-if="day.day" @click="day.isSelectable ? selectDate(day.date) : null" class="btn w-100" :class="{ 'btn-primary': day.isSelected, 'btn-outline-secondary': !day.isSelected, 'btn-disabled': !day.isSelectable }" :disabled="!day.isSelectable">
-                            {{ day.day }}
-                        </button>
-                    </div>
+<div>
+    <div class="mb-3 text-center">
+        <button @click="changeMonth('prev')" class="btn btn-info">&lt; 上個月</button>
+        <span class="mx-2">{{ currentYear }}年 {{ currentMonth + 1 }}月</span>
+        <button @click="changeMonth('next')" class="btn btn-info">下個月 &gt;</button>
+    </div>
+    <div class="row text-center">
+        <div class="col-12">
+            <div class="d-flex flex-wrap border-bottom">
+                <div class="p-2 flex-fill" style="width: 14.28%;">日</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">一</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">二</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">三</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">四</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">五</div>
+                <div class="p-2 flex-fill" style="width: 14.28%;">六</div>
+            </div>
+            <div class="d-flex flex-wrap">
+                <div v-for="day in days" :key="day.date" class="p-2 flex-fill" style="width: 14.28%;">
+                    <button v-if="day.day" @click="day.isSelectable ? selectDate(day.date) : null" class="btn w-100" :class="{ 'btn-primary': day.isSelected, 'btn-outline-secondary': !day.isSelected, 'btn-disabled': !day.isSelectable }" :disabled="!day.isSelectable">
+                        {{ day.day }}
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    `,
+</div>
+`,
         };
 
         createApp({
@@ -198,31 +197,18 @@
                 const pricePerNight = 5000;
 
                 const selectedRooms = computed(() => availableRooms.value.filter(room => room.selected));
-                const selectedRoomNumbers = computed(() => {
-                    return selectedRooms.value.map(room => "Room0" + room.roomNumber).join(", ");
-                });
+                const selectedRoomNumbers = computed(() => selectedRooms.value.map(room => "Room0" + room.roomNumber).join(", "));
 
-                const gotoStep = (newStep) => {
-                    step.value = newStep;
-                };
-
+                const gotoStep = (newStep) => { step.value = newStep; };
 
                 const autoSelectRooms = () => {
-                    availableRooms.value.forEach(room => {
-                        room.selected = false;
-                    });
-
+                    availableRooms.value.forEach(room => { room.selected = false; });
                     const roomsToSelect = availableRooms.value.filter(room => room.available).slice(0, selectedRoomCount.value);
-                    roomsToSelect.forEach(room => {
-                        room.selected = true;
-                    });
+                    roomsToSelect.forEach(room => { room.selected = true; });
                 };
 
-
                 const toggleRoomSelection = (room) => {
-                    if(room.available) {
-                        room.selected = !room.selected;
-                    }
+                    if (room.available) { room.selected = !room.selected; }
                 };
 
                 const updateDateRange = ({ startDate, endDate }) => {
@@ -234,7 +220,6 @@
                         console.error("日期範圍不完整:", startDate, endDate);
                     }
                 };
-
 
                 const fetchAvailableRooms = (startDate, endDate) => {
                     $.ajax({
@@ -257,28 +242,19 @@
                     });
                 };
 
-
-
                 const calculateTotalPrice = () => {
                     const start = new Date(selectedDates.value[0]);
                     const end = new Date(selectedDates.value[1]);
                     const diffTime = Math.abs(end - start);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    const numberOfRooms = selectedRooms.value.length;
-                    totalPrice.value = diffDays * pricePerNight * numberOfRooms;
+                    totalPrice.value = diffDays * pricePerNight * selectedRooms.value.length;
                     deposit.value = totalPrice.value * 0.3;
-
                 };
 
-
-
                 const submitBooking = () => {
-
-                    const selectedRoomNumbers = selectedRooms.value.map(room => room.roomNumber);
-
                     const bookingData = {
-                        selectedRooms: selectedRoomNumbers,
-                        selectedDates: [selectedDates.value[0], selectedDates.value[1]],
+                        selectedRooms: selectedRoomNumbers.value,
+                        selectedDates: selectedDates.value,
                         name: name.value,
                         email: email.value,
                         phone: phone.value,
@@ -286,7 +262,7 @@
                         totalPrice: totalPrice.value,
                         deposit: deposit.value,
                     };
-
+                    console.log(bookingData);
                     $.ajax({
                         url: './api/createBooking.php',
                         type: 'POST',
@@ -294,10 +270,10 @@
                         data: JSON.stringify(bookingData),
                         success: function(response) {
                             if (response.error) {
-                                alert('预订失败: ' + response.error);
+                                alert('預定失敗: ' + response.error);
                             } else if (response.success) {
                                 alert(response.message);
-                                location.href="index.php";
+                                location.href = "index.php";
                             }
                         },
                     });
@@ -308,12 +284,12 @@
                         calculateTotalPrice();
                     }
                 });
+
                 watch([selectedDates, selectedRooms], () => {
                     if (selectedDates.value[0] && selectedDates.value[1] && selectedRooms.value.length > 0) {
                         calculateTotalPrice();
                     }
                 }, { deep: true });
-
 
                 return {
                     step,

@@ -83,12 +83,12 @@
                             <textarea class="form-control" v-model="editingBooking.remarks"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>總金額</label>
-                            <input type="number" class="form-control" v-model="editingBooking.totalPrice" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>需付訂金</label>
-                            <input type="number" class="form-control" v-model="editingBooking.deposit" readonly>
+                                <label>總金額</label>
+                                <input type="number" class="form-control" v-model="editingBooking.totalPrice" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>需付訂金</label>
+                                <input type="number" class="form-control" v-model="editingBooking.deposit" readonly>
                         </div>
                     </form>
                 </div>

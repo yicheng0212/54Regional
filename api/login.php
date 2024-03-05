@@ -15,8 +15,6 @@ include './db.php';
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $userId = (int)$row['user_id'];
-
-            // 設置用戶的會話信息
             $_SESSION['user_id'] = $userId;
             $_SESSION['username'] = $username;
 

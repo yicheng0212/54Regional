@@ -111,23 +111,15 @@
                         success: (messages) => {
                             this.messages = messages;
                         },
-                        error: () => {
-                            alert('無法加載留言');
-                        }
                     });
-                },
-                showAddMessageModal() {
-                    this.editMode = false;
-                    this.resetForm();
-                    $('#messageModal').modal('show');
                 },
                 prepareEditOrDelete(message, action) {
                     if (action === 'edit') {
                         this.editMode = true;
                         this.formData = {
                             ...message,
-                            displayEmail: message.display_email === '1',
-                            displayPhone: message.display_phone === '1',
+                            displayEmail: message.displayEmail === '1',
+                            displayPhone: message.displayPhone === '1',
                         };
                         $('#messageModal').modal('show');
                     } else if (action === 'delete') {
@@ -144,9 +136,6 @@
                                 alert('留言已刪除');
                                 this.loadMessages();
                             },
-                            error: () => {
-                                alert('刪除留言時發生錯誤');
-                            }
                         });
                     }
                 },
@@ -159,9 +148,6 @@
                             alert('留言已置頂');
                             this.loadMessages();
                         },
-                        error: () => {
-                            alert('置頂留言時發生錯誤');
-                        }
                     });
                 },
                 handleSubmit() {
@@ -177,10 +163,7 @@
                             alert('留言已提交');
                             $('#messageModal').modal('hide');
                             this.loadMessages();
-                        }.bind(this),
-                        error: function() {
-                            alert('提交留言时发生错误');
-                        }
+                        }.bind(this)
                     });
                 },
                 resetForm() {
