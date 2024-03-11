@@ -82,7 +82,7 @@
                 <p class='card-text'>
                     <small class='text-muted'>
                         發佈於{{ message.created_at }}
-                        <span v-if="message.updated_at && message.updated_at != message.created_at">，編輯於 {{ message.updated_at }}</span>
+                        <span v-if="message.updated_at !== message.created_at">，編輯於 {{ message.updated_at }}</span>
                     </small>
                 </p>
                 <p v-if="message.displayEmail == 1" class='card-text'>Email: {{ message.email }}</p>
@@ -165,7 +165,7 @@
                         type: 'GET',
                         success: (message) => {
                             this.editMode = true;
-                            this.formData = { ...message, image: null, displayEmail: message.displayEmail === '1', displayPhone: message.displayPhone === '1' };
+                            this.formData = { ...message};
                             $('#messageModal').modal('show');
                         },
                     });
@@ -184,7 +184,7 @@
                 handleSubmit() {
                     const data = {
                         ...this.formData,
-                        image: this.formData.image ? this.formData.image : ''
+                        image: this.formData.image || ''
                     };
 
                     const url = this.editMode ? './api/editMessage.php' : './api/createMessage.php';

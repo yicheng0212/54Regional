@@ -7,35 +7,32 @@
     <?php include "link.php";?>
 </head>
 <body class="bg-warning">
-<div class="container">
+<div id="app" class="container">
     <?php include "header.php"; ?>
     <div class="card p-3 shadow bg-light">
-        <!-- 即時交通狀況 -->
         <div class="alert alert-info" role="alert">
             <h3>即時交通狀況</h3>
             <p>道路通暢，目前沒有擁堵或事故報告。</p>
         </div>
 
-        <!-- 交通路線查詢 -->
-        <div class="card mb-3">
+        <div class="card mb-3" v-cloak>
             <div class="card-body">
                 <h3>交通路線查詢</h3>
-                <form id="routeForm">
+                <form @submit.prevent="queryRoute">
                     <div class="mb-3">
                         <label for="start" class="form-label">起點：</label>
-                        <input type="text" class="form-control" id="start" required>
+                        <input type="text" class="form-control" v-model="start" required>
                     </div>
                     <div class="mb-3">
                         <label for="end" class="form-label">目的地：</label>
-                        <input type="text" class="form-control" id="end" required>
+                        <input type="text" class="form-control" v-model="end" required>
                     </div>
                     <button type="submit" class="btn btn-primary">查詢路線</button>
                 </form>
-                <div id="routeResult" class="mt-3"></div>
+                <div class="mt-3">{{routeResult}}</div>
             </div>
         </div>
 
-        <!-- 公共交通資訊 -->
         <div class="card mb-3">
             <div class="card-body">
                 <h3>公共交通資訊</h3>
@@ -43,14 +40,13 @@
             </div>
         </div>
 
-        <!-- 使用者反饋 -->
         <div class="card">
             <div class="card-body">
                 <h3>使用者反饋</h3>
-                <form id="feedbackForm">
+                <form @submit.prevent="submitFeedback">
                     <div class="mb-3">
                         <label for="feedback" class="form-label">您的意見：</label>
-                        <textarea class="form-control" id="feedback" rows="3" required></textarea>
+                        <textarea class="form-control" v-model="feedback" rows="3" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">提交反饋</button>
                 </form>
@@ -59,19 +55,25 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        $("#routeForm").submit(function(event) {
-            event.preventDefault();
-            const start = $("#start").val();
-            const end = $("#end").val();
-            $("#routeResult").html(`從 ${start} 到 ${end} 的最佳路線為...`);
-        });
-
-        $("#feedbackForm").submit(function(event) {
-            event.preventDefault();
-            alert("感謝您的反饋：" + $("#feedback").val());
-        });
-    });
+    Vue.createApp({
+        data() {
+            return {
+                start: '',
+                end: '',
+                feedback: '',
+                routeResult: ''
+            };
+        },
+        methods: {
+            queryRoute() {
+                this.routeResult = `從 ${this.start} 到 ${this.end} 的最佳路線為...`;
+            },
+            submitFeedback() {
+                alert(`感謝您的反饋：${this.feedback}`);
+                this.feedback = '';
+            }
+        }
+    }).mount('#app');
 </script>
 </body>
 </html>

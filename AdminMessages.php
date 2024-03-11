@@ -37,7 +37,6 @@
                             <label for="image">圖片上傳:</label>
                             <input type="file" class="form-control-file" ref="image" @change="handleFileUpload">
                         </div>
-                        <div id="editOptions" v-if="editMode">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" v-model="formData.displayEmail" checked>
                                 <label class="form-check-label" for="displayEmail">顯示Email</label>
@@ -46,7 +45,6 @@
                                 <input type="checkbox" class="form-check-input" v-model="formData.displayPhone" checked>
                                 <label class="form-check-label" for="displayPhone">顯示電話</label>
                             </div>
-                        </div>
                         <button type="submit" class="btn btn-primary">提交</button>
                     </form>
                 </div>
@@ -77,7 +75,7 @@
             </div>
             <div class='card-body bg-light' v-else>
                 <h4 class='card-title'>{{ message.name }}</h4>
-                <p class='card-text'>此留言已被刪除。</p>
+                <p class='card-text'>{{ message.content }}</p>
                 <button @click="prepareEditOrDelete(message, 'delete')" class='btn btn-danger m-1'>刪除</button>
                 <p class='card-text'><small class='text-muted'>發布於 {{ message.created_at }}，刪除於 {{ message.deleted_at }}</small></p>
             </div>
@@ -115,11 +113,8 @@
                 },
                 prepareEditOrDelete(message, action) {
                     if (action === 'edit') {
-                        this.editMode = true;
                         this.formData = {
-                            ...message,
-                            displayEmail: message.displayEmail === '1',
-                            displayPhone: message.displayPhone === '1',
+                            ...message
                         };
                         $('#messageModal').modal('show');
                     } else if (action === 'delete') {
@@ -179,8 +174,8 @@
                         image: null,
                     };
                 },
-                handleFileUpload(event) {
-                    this.formData.image = event.target.files.length > 0 ? event.target.files[0].name : '';
+                handleFileUpload(e) {
+                    this.formData.image = e.target.files[0]?.name || '';
                 },
             },
             mounted() {

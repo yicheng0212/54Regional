@@ -6,8 +6,7 @@ header('Content-Type: application/json');
     $stmt = $conn->prepare("DELETE FROM messages WHERE id = ?");
     $stmt->bind_param("i", $id);
 
-    $result = $stmt->execute();
-    if ($result) {
+    if ($stmt->execute()) {
         echo json_encode(["message" => "留言已成功删除。"]);
     }
 $stmt->close();

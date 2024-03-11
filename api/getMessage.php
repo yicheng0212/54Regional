@@ -11,9 +11,6 @@ header('Content-Type: application/json');
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         echo json_encode($row);
-    } else {
-        echo json_encode(["message" => "沒有留言"]);
     }
-
 $stmt->close();
 $conn->close();

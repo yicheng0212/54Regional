@@ -14,10 +14,10 @@ if (isset($_POST['delete']) && $_POST['delete'] == 1) {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $content = $_POST['content'];
-    $displayEmail = isset($_POST['displayEmail']) ? (int)$_POST['displayEmail'] : 0;
-    $displayPhone = isset($_POST['displayPhone']) ? (int)$_POST['displayPhone'] : 0;
+    $displayEmail = (int)($_POST['displayEmail'] ?? 0);
+    $displayPhone = (int)($_POST['displayPhone'] ?? 0);
     $admin_response = $_POST['admin_response'];
-    $image_path = isset($_POST['image']) ? "./image/" . $_POST['image'] : '';
+    $image_path = "./image/" . ($_POST['image'] ?? '');
 
     $sql = "UPDATE messages SET name = ?, email = ?, phone = ?, content = ?, displayEmail = ?, displayPhone = ?, admin_response = ?, image_path = ?, updated_at = NOW() WHERE id = ?";
     $stmt = $conn->prepare($sql);
