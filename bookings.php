@@ -7,67 +7,67 @@
 </head>
 <body class="bg-warning">
 <div id="app" class="container">
-<?php include_once "header.php";?>
+    <?php include_once "header.php";?>
     <div class="card p-3 shadow bg-light">
-    <div v-if="step === 1">
-        <h3>選擇日期</h3>
-        <Calendar @update-date-range="updateDateRange"></Calendar>
-        <button class="btn btn-primary mt-3" @click="gotoStep(2)">下一步</button>
-    </div>
-
-    <div v-if="step === 2">
-        <h3>選擇房間數量</h3>
-        <div class="mt-3">
-            <label for="roomCount" class="form-label">房間數量:</label>
-            <select id="roomCount" class="form-select" v-model="selectedRoomCount">
-                <option v-for="count in maxRoomCount" :value="count">{{ count }}</option>
-            </select>
+        <div v-if="step === 1">
+            <h3>選擇日期</h3>
+            <Calendar @update-date-range="updateDateRange"></Calendar>
+            <button class="btn btn-primary mt-3" @click="gotoStep(2)">下一步</button>
         </div>
 
+        <div v-if="step === 2">
+            <h3>選擇房間數量</h3>
+            <div class="mt-3">
+                <label for="roomCount" class="form-label">房間數量:</label>
+                <select id="roomCount" class="form-select" v-model="selectedRoomCount">
+                    <option v-for="count in maxRoomCount" :value="count">{{ count }}</option>
+                </select>
+            </div>
 
-        <h3>選擇房間</h3>
-        <button class="btn btn-secondary mt-3" @click="autoSelectRooms">自動選擇房間</button>
-        <div v-if="availableRooms.length" class="d-flex flex-wrap">
-            <div v-for="room in availableRooms" :key="room.roomNumber" class="card m-2" style="width: 18rem;"
-                 :class="{
+
+            <h3>選擇房間</h3>
+            <button class="btn btn-secondary mt-3" @click="autoSelectRooms">自動選擇房間</button>
+            <div v-if="availableRooms.length" class="d-flex flex-wrap">
+                <div v-for="room in availableRooms" :key="room.roomNumber" class="card m-2" style="width: 18rem;"
+                     :class="{
                 'bg-success': room.selected && room.available,
                 'bg-danger': !room.available,
                 'bg-light': !room.selected && room.available
              }">
-                <div class="card-body" @click="room.available && toggleRoomSelection(room)">
-                    <h5 class="card-title">Room {{ room.roomNumber }}</h5>
-                    <p class="card-text">{{ room.available ? '可預訂' : '已訂' }}</p>
+                    <div class="card-body" @click="room.available && toggleRoomSelection(room)">
+                        <h5 class="card-title">{{ room.roomNumber }}</h5>
+                        <p class="card-text">{{ room.available ? '可預訂' : '已訂' }}</p>
+                    </div>
                 </div>
             </div>
+            <div v-else>
+                <p>房間已滿</p>
+            </div>
+            <button class="btn btn-primary mt-3" @click="gotoStep(3)">下一步</button>
         </div>
-        <div v-else>
-            <p>房間已滿</p>
+
+
+
+        <div v-if="step === 3">
+            <h3>確認訂房資料</h3>
+            <p>您選擇了 {{ selectedRooms.length }} 間房</p>
+            <p>房間號碼: {{ selectedRoomNumbers }}</p>
+            <p>入住日期: {{ selectedDates[0] }}</p>
+            <p>退房日期: {{ selectedDates[1] }}</p>
+            <p>總價: {{ totalPrice }}元</p>
+            <p>定金: {{ deposit }}元（總價30%） </p>
+            <button class="btn btn-primary" @click="gotoStep(4)">填寫聯絡資訊</button>
         </div>
-        <button class="btn btn-primary mt-3" @click="gotoStep(3)">下一步</button>
+
+        <div v-if="step === 4">
+            <h3>填寫聯絡資訊</h3>
+            <input type="text" v-model="name" placeholder="姓名" class="form-control mb-2" required>
+            <input type="email" v-model="email" placeholder="email" class="form-control mb-2" required>
+            <input type="tel" v-model="phone" placeholder="電話" class="form-control mb-2" required>
+            <textarea v-model="remarks" placeholder="備註" class="form-control mb-2"></textarea>
+            <button class="btn btn-success" @click="submitBooking">確認預定</button>
+        </div>
     </div>
-
-
-
-    <div v-if="step === 3">
-        <h3>確認訂房資料</h3>
-        <p>您選擇了 {{ selectedRooms.length }} 間房</p>
-        <p>房間號碼: {{ selectedRoomNumbers }}</p>
-        <p>入住日期: {{ selectedDates[0] }}</p>
-        <p>退房日期: {{ selectedDates[1] }}</p>
-        <p>總價: {{ totalPrice }}元</p>
-        <p>定金: {{ deposit }}元（總價30%） </p>
-        <button class="btn btn-primary" @click="gotoStep(4)">填寫聯絡資訊</button>
-    </div>
-
-    <div v-if="step === 4">
-        <h3>填寫聯絡資訊</h3>
-        <input type="text" v-model="name" placeholder="姓名" class="form-control mb-2" required>
-        <input type="email" v-model="email" placeholder="email" class="form-control mb-2" required>
-        <input type="tel" v-model="phone" placeholder="電話" class="form-control mb-2" required>
-        <textarea v-model="remarks" placeholder="備註" class="form-control mb-2"></textarea>
-        <button class="btn btn-success" @click="submitBooking">確認預定</button>
-    </div>
-</div>
 </div>
 
 <script>
@@ -197,18 +197,22 @@
                 const pricePerNight = 5000;
 
                 const selectedRooms = computed(() => availableRooms.value.filter(room => room.selected));
-                const selectedRoomNumbers = computed(() => selectedRooms.value.map(room => "Room0" + room.roomNumber).join(", "));
 
-                const gotoStep = (newStep) => { step.value = newStep; };
+                const selectedRoomNumbers = computed(() =>
+                    selectedRooms.value.map(room => `Room0${room.roomNumber}`).join(", ")
+                );
+
+                const gotoStep = newStep => { step.value = newStep; };
 
                 const autoSelectRooms = () => {
-                    availableRooms.value.forEach(room => { room.selected = false; });
-                    const roomsToSelect = availableRooms.value.filter(room => room.available).slice(0, selectedRoomCount.value);
-                    roomsToSelect.forEach(room => { room.selected = true; });
+                    availableRooms.value.forEach(room => room.selected = false);
+                    availableRooms.value.filter(room => room.available)
+                        .slice(0, selectedRoomCount.value)
+                        .forEach(room => room.selected = true);
                 };
 
-                const toggleRoomSelection = (room) => {
-                    if (room.available) { room.selected = !room.selected; }
+                const toggleRoomSelection = room => {
+                    if (room.available) room.selected = !room.selected;
                 };
 
                 const updateDateRange = ({ startDate, endDate }) => {
@@ -216,8 +220,6 @@
                         selectedDates.value = [startDate, endDate];
                         fetchAvailableRooms(startDate, endDate);
                         calculateTotalPrice();
-                    } else {
-                        console.error("日期範圍不完整:", startDate, endDate);
                     }
                 };
 
@@ -230,7 +232,7 @@
                         success: function(response) {
                             if (response.rooms && response.rooms.length > 0) {
                                 availableRooms.value = response.rooms.map(room => ({
-                                    roomNumber: room.roomNumber,
+                                    roomNumber: 'Room ' + room.roomNumber,
                                     available: room.available
                                 }));
                                 maxRoomCount.value = availableRooms.value.filter(room => room.available).length;
@@ -241,12 +243,10 @@
                         },
                     });
                 };
-
                 const calculateTotalPrice = () => {
                     const start = new Date(selectedDates.value[0]);
                     const end = new Date(selectedDates.value[1]);
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
                     totalPrice.value = diffDays * pricePerNight * selectedRooms.value.length;
                     deposit.value = totalPrice.value * 0.3;
                 };
@@ -262,19 +262,15 @@
                         totalPrice: totalPrice.value,
                         deposit: deposit.value,
                     };
-                    console.log(bookingData);
+
                     $.ajax({
                         url: './api/createBooking.php',
-                        type: 'POST',
+                        method: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify(bookingData),
-                        success: function(response) {
-                            if (response.error) {
-                                alert('預定失敗: ' + response.error);
-                            } else if (response.success) {
-                                alert(response.message);
-                                location.href = "index.php";
-                            }
+                        success: (response) => {
+                            alert(response.error ? `預定失敗: ${response.error}` : response.message);
+                            if (!response.error && response.success) location.href = "index.php";
                         },
                     });
                 };

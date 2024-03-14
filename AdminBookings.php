@@ -134,9 +134,6 @@
                     success: (data) => {
                         this.bookings = data;
                     },
-                    error: (error) => {
-                        console.error("Error fetching bookings:", error);
-                    }
                 });
             },
             showEditModal(booking) {
@@ -154,10 +151,6 @@
                         this.fetchBookings();
                         alert('訂單更新成功！');
                     },
-                    error: (error) => {
-                        console.error("Error updating booking:", error);
-                        alert('訂單更新失敗！');
-                    }
                 });
             },
 
@@ -173,10 +166,6 @@
                             this.fetchBookings();
                             alert('訂單刪除成功！');
                         },
-                        error: (error) => {
-                            console.error("Error deleting booking:", error);
-                            alert('訂單刪除失敗！');
-                        }
                     });
                 }
             }
