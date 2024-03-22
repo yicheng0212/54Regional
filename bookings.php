@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>訪客訂房</title>
-    <?php include_once "link.php";?>
+    <?php include "link.php";?>
 </head>
 <body class="bg-warning">
 <div id="app" class="container">
-    <?php include_once "header.php";?>
+    <?php include "header.php";?>
     <div class="card p-3 shadow bg-light">
         <div v-if="step === 1">
             <h3>選擇日期</h3>
@@ -199,7 +199,7 @@
                 const selectedRooms = computed(() => availableRooms.value.filter(room => room.selected));
 
                 const selectedRoomNumbers = computed(() =>
-                    selectedRooms.value.map(room => `Room0${room.roomNumber}`).join(", ")
+                    selectedRooms.value.map(room => `${room.roomNumber}`).join(", ")
                 );
 
                 const gotoStep = newStep => { step.value = newStep; };
@@ -232,7 +232,7 @@
                         success: function(response) {
                             if (response.rooms && response.rooms.length > 0) {
                                 availableRooms.value = response.rooms.map(room => ({
-                                    roomNumber: 'Room ' + room.roomNumber,
+                                    roomNumber: room.roomNumber,
                                     available: room.available
                                 }));
                                 maxRoomCount.value = availableRooms.value.filter(room => room.available).length;

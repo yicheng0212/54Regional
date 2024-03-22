@@ -15,7 +15,7 @@
             <p>道路通暢，目前沒有擁堵或事故報告。</p>
         </div>
 
-        <div class="card mb-3" v-cloak>
+        <div class="card mb-3">
             <div class="card-body">
                 <h3>交通路線查詢</h3>
                 <form @submit.prevent="queryRoute">

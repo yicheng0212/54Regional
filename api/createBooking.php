@@ -4,8 +4,7 @@ header('Content-Type: Application/json');
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$selectedRooms = $data['selectedRooms'] ?? [];
-$selectedRooms = is_array($selectedRooms) ? $selectedRooms : [$selectedRooms];
+$selectedRooms = (array) $data['selectedRooms'];
 
 $name = $data['name'] ?? '';
 $email = $data['email'] ?? '';

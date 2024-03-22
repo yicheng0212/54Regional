@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 $id = $_POST['id'];
 
-if (isset($_POST['delete']) && $_POST['delete'] == 1) {
+if (!empty($_POST['delete'])) {
     $sql = "UPDATE messages SET content = '此留言已被刪除', deleted_at = NOW() WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
@@ -25,7 +25,7 @@ if (isset($_POST['delete']) && $_POST['delete'] == 1) {
 }
 
 if ($stmt->execute()) {
-    $response = isset($_POST['delete']) && $_POST['delete'] == 1 ? "留言已删除" : "留言已成功编辑";
+    $response = !empty($_POST['delete']) ? "留言已删除" : "留言已成功编辑";
     echo json_encode(['status' => 'success', 'message' => $response]);
 }
 $stmt->close();
