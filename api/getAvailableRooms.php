@@ -3,8 +3,8 @@ include "db.php";
 header('Content-Type: Application/json');
 
 $data = json_decode(file_get_contents('php://input'), true);
-$checkInDate = $data['checkInDate'] ?? null;
-$checkOutDate = $data['checkOutDate'] ?? null;
+$checkInDate = $data['checkInDate'];
+$checkOutDate = $data['checkOutDate'];
 
 $availableRooms = [];
 for ($roomNumber = 1; $roomNumber <= 8; $roomNumber++) {
@@ -14,15 +14,12 @@ for ($roomNumber = 1; $roomNumber <= 8; $roomNumber++) {
 $sql = "SELECT DISTINCT roomNumber FROM bookings WHERE checkOutDate > ? AND checkInDate < ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $checkInDate, $checkOutDate);
-
-if ($stmt->execute()) {
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $roomNumberStr = $row['roomNumber'];
-        $roomNumber = intval(str_replace("Room ", "", $roomNumberStr));
-        if (isset($availableRooms[$roomNumber])) {
-            $availableRooms[$roomNumber]['available'] = false;
-        }
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $roomNumber = intval(str_replace("Room ", "", $row['roomNumber']));
+    if (isset($availableRooms[$roomNumber])) {
+        $availableRooms[$roomNumber]['available'] = false;
     }
 }
 

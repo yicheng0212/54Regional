@@ -21,7 +21,7 @@ if (!empty($_POST['delete'])) {
 
     $sql = "UPDATE messages SET name = ?, email = ?, phone = ?, content = ?, displayEmail = ?, displayPhone = ?, admin_response = ?, image_path = ?, updated_at = NOW() WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssissssi", $name, $email, $phone, $content, $displayEmail, $displayPhone, $admin_response, $image_path, $id);
+    $stmt->bind_param("ssssssssi", $name, $email, $phone, $content, $displayEmail, $displayPhone, $admin_response, $image_path, $id);
 }
 
 if ($stmt->execute()) {

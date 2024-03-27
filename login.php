@@ -36,19 +36,19 @@
 </div>
 <script>
     Vue.createApp({
-        data() {
+        data(){
             return {
-                username: '',
-                password: '',
-                captcha: '',
-                captchaSrc: 'captcha.php'
+                username : '',
+                password : '',
+                captcha : '',
+                captchaSrc : 'captcha.php',
             };
         },
-        methods: {
-            submitForm() {
+        methods:{
+            submitForm(){
                 $.ajax({
-                    url: './api/login.php',
-                    type: 'POST',
+                    url : './api/login.php',
+                    type : 'POST',
                     data: {
                         username: this.username,
                         password: this.password,
@@ -57,15 +57,17 @@
                     success: (response) => {
                         if (response === 'success') {
                             window.location.href = 'admin.php';
+                        } else {
+
+                            alert(response);
                         }
                     },
                 });
             },
-            refreshCaptcha() {
-                this.captchaSrc = 'captcha.php?' + new Date().getTime();
+            refreshCaptcha(){
+                this.captchaScr = 'captcha.php' + new Date().getTime();
             }
-        }
+        },
     }).mount('#app');
 </script>
 </body>
-</html>

@@ -16,51 +16,43 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="booking in bookings" :key="booking.bookingNumber">
+            <tr v-for="booking in bookings" :key="booking.id">
                 <td>{{ booking.bookingNumber }}</td>
                 <td>{{ booking.roomNumber }}</td>
                 <td>{{ booking.name }}</td>
                 <td>{{ booking.phone }}</td>
                 <td>{{ booking.email }}</td>
-                <td>{{ booking.checkInDate }}～<br>{{ booking.checkOutDate }}</td>
+                <td>{{ booking.checkInDate }}～{{ booking.checkOutDate }}</td>
                 <td>{{ booking.remarks }}</td>
                 <td>{{ booking.totalPrice }}</td>
                 <td>{{ booking.deposit }}</td>
                 <td>
-                    <button class="btn btn-outline-secondary btn-sm m-1" @click="showEditModal(booking)">編輯</button>
-                    <button class="btn btn-outline-danger btn-sm m-1" @click="deleteBooking(booking.id)">刪除</button>
+                    <button class="btn btn-outline-secondary btn-sm" @click="showEditModal(booking)">編輯</button>
+                    <button class="btn btn-outline-danger btn-sm" @click="deleteBooking(booking.id)">刪除</button>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- 編輯訂房訂單模態框 -->
-    <div class="modal fade" id="editBookingModal" tabindex="-1" aria-labelledby="editBookingModalLabel" aria-hidden="true">
+    <!-- Edit Booking Modal -->
+    <div class="modal fade" id="editBookingModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editBookingModalLabel">編輯訂房訊息</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title">編輯訂房訊息</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-
                 <div class="modal-body">
-                    <!-- 编辑表单 -->
                     <form>
-                        <input type="hidden" v-model="editingBooking.id">
                         <div class="form-group">
                             <label>訂房編號</label>
                             <input type="text" class="form-control" v-model="editingBooking.bookingNumber" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="edit-check-in-date">入住第一晚的日期</label>
-                            <input type="date" class="form-control" id="edit-check-in-date" v-model="editingBooking.checkInDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-check-out-date">入住最後一晚的日期</label>
-                            <input type="date" class="form-control" id="edit-check-out-date" v-model="editingBooking.checkOutDate">
+                            <label>入住日期</label>
+                            <input type="date" class="form-control" v-model="editingBooking.checkInDate">
+                            <input type="date" class="form-control" v-model="editingBooking.checkOutDate">
                         </div>
                         <div class="form-group">
                             <label>房間編號</label>
@@ -83,16 +75,15 @@
                             <textarea class="form-control" v-model="editingBooking.remarks"></textarea>
                         </div>
                         <div class="form-group">
-                                <label>總金額</label>
-                                <input type="number" class="form-control" v-model="editingBooking.totalPrice" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>需付訂金</label>
-                                <input type="number" class="form-control" v-model="editingBooking.deposit" readonly>
+                            <label>總金額</label>
+                            <input type="number" class="form-control" v-model="editingBooking.totalPrice" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>需付訂金</label>
+                            <input type="number" class="form-control" v-model="editingBooking.deposit" readonly>
                         </div>
                     </form>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
                     <button type="button" class="btn btn-primary" @click="saveBooking">保存更改</button>

@@ -1,6 +1,6 @@
 <?php
 include 'db.php';
-
+header('Content-Type:Application/json');
 $data = json_decode(file_get_contents('php://input'), true);
 
 function calculateTotalPrice($checkInDate, $checkOutDate) {

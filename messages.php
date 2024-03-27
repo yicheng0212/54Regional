@@ -78,6 +78,7 @@
                 <h4 class='card-title'>{{ message.name }}</h4>
                 <div v-if="message.is_top == 1" class="badge badge-success">置頂</div>
                 <p class='card-text'>留言内容: {{ message.content }}</p>
+                <p v-if="message.admin_response" class='card-text'>管理者回覆: {{ message.admin_response }}</p>
                 <img v-if="message.image_path" :src="message.image_path" class="img-fluid">
                 <p class='card-text'>
                     <small class='text-muted'>
@@ -182,17 +183,12 @@
                     });
                 },
                 handleSubmit() {
-                    const data = {
-                        ...this.formData,
-                        image: this.formData.image || ''
-                    };
-
                     const url = this.editMode ? './api/editMessage.php' : './api/createMessage.php';
 
                     $.ajax({
                         url: url,
                         type: 'POST',
-                        data: data,
+                        data: this.formData,
                         success: function(response) {
                             alert('留言已提交');
                             $('#messageModal').modal('hide');
@@ -200,6 +196,10 @@
                         }.bind(this)
                     });
                 },
+                handleFileUpload(e) {
+                    this.formData.image = e.target.files[0]?.name || '';
+                },
+            },
                 resetForm() {
                     this.formData = {
                         id: '',
@@ -213,10 +213,6 @@
                         displayPhone: false,
                     };
                 },
-                handleFileUpload(e) {
-                    this.formData.image = e.target.files[0]?.name || '';
-                },
-            },
             mounted() {
                 this.loadMessages();
             },

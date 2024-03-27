@@ -45,6 +45,10 @@
                                 <input type="checkbox" class="form-check-input" v-model="formData.displayPhone" checked>
                                 <label class="form-check-label" for="displayPhone">顯示電話</label>
                             </div>
+                        <div class="form-group">
+                            <label for="admin_response">管理者回覆:</label>
+                            <textarea class="form-control" v-model="formData.admin_response" rows="3" required></textarea>
+                        </div>
                         <button type="submit" class="btn btn-primary">提交</button>
                     </form>
                 </div>
@@ -59,6 +63,7 @@
                 <h4 class='card-title'>{{ message.name }}</h4>
                 <div v-if="message.is_top == 1" class="badge badge-success">置頂</div>
                 <p class='card-text'>留言內容: {{ message.content }}</p>
+                <p v-if="message.admin_response" class='card-text'>管理者回覆: {{ message.admin_response }}</p>
                 <img v-if="message.image_path" :src="message.image_path" class="img-fluid" alt="留言圖片">
                 <p class='card-text'>
                     <small class='text-muted'>
@@ -81,7 +86,6 @@
             </div>
         </div>
     </div>
-
     <script>
         Vue.createApp({
             data() {

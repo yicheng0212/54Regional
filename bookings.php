@@ -11,7 +11,7 @@
     <div class="card p-3 shadow bg-light">
         <div v-if="step === 1">
             <h3>選擇日期</h3>
-            <Calendar @update-date-range="updateDateRange"></Calendar>
+            <Day @update-date-range="updateDateRange"></Day>
             <button class="btn btn-primary mt-3" @click="gotoStep(2)">下一步</button>
         </div>
 
@@ -39,9 +39,6 @@
                         <p class="card-text">{{ room.available ? '可預訂' : '已訂' }}</p>
                     </div>
                 </div>
-            </div>
-            <div v-else>
-                <p>房間已滿</p>
             </div>
             <button class="btn btn-primary mt-3" @click="gotoStep(3)">下一步</button>
         </div>
@@ -71,10 +68,9 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const { createApp, ref, reactive, toRefs, computed, watch } = Vue;
+        const { createApp, ref, reactive, toRefs, computed, watchEffect } = Vue;
 
-        const Calendar = {
+        const Day = {
             emits: ['updateDateRange'],
             setup(props, { emit }) {
                 const state = reactive({
@@ -84,44 +80,41 @@
                     dateRanges: [],
                 });
 
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
 
                 const calculateDays = () => {
                     state.days = [];
                     const firstDayOfMonth = new Date(state.currentYear, state.currentMonth, 1).getDay();
                     const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
                     const emptyStartDays = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+                    const emptyEndDays = (7 - ((emptyStartDays + daysInMonth) % 7)) % 7;
+                    const totalDays = emptyStartDays + daysInMonth + emptyEndDays;
 
-                    for (let i = 0; i < emptyStartDays; i++) {
-                        state.days.push({ day: null, date: null });
-                    }
-
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const date = new Date(state.currentYear, state.currentMonth, day);
-                        const dateString = `${state.currentYear}-${state.currentMonth + 1}-${day}`;
-                        const isSelected = state.dateRanges.some(range => date >= new Date(range.startDate) && date <= new Date(range.endDate));
+                    for (let i = 0; i < totalDays; i++) {
+                        let day = null, date = null, isSelected = false;
+                        if (i >= emptyStartDays && i < emptyStartDays + daysInMonth) {
+                            day = i - emptyStartDays + 1;
+                            date = new Date(state.currentYear, state.currentMonth, day);
+                            const dateString = `${state.currentYear}-${state.currentMonth + 1}-${day}`;
+                            isSelected = state.dateRanges.some(range =>
+                                date >= new Date(range.startDate) && date <= new Date(range.endDate)
+                            );
+                            date = dateString;
+                        }
                         state.days.push({
-                            day,
-                            date: dateString,
-                            isSelectable: date >= today,
-                            isSelected,
+                            day: day,
+                            date: date,
+                            isSelected: isSelected,
+                            isSelectable: date ? new Date(date) >= new Date() : false
                         });
-                    }
-
-                    const totalCells = emptyStartDays + daysInMonth;
-                    const emptyEndDays = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-
-                    for (let i = 0; i < emptyEndDays; i++) {
-                        state.days.push({ day: null, date: null });
                     }
                 };
 
                 const selectDate = (date) => {
-                    if (state.dateRanges.length === 0 || state.dateRanges[state.dateRanges.length - 1].endDate) {
+                    const lastRangeIndex = state.dateRanges.length - 1;
+                    if (lastRangeIndex === -1 || state.dateRanges[lastRangeIndex].endDate) {
                         state.dateRanges.push({ startDate: date, endDate: null });
                     } else {
-                        const currentRange = state.dateRanges[state.dateRanges.length - 1];
+                        const currentRange = state.dateRanges[lastRangeIndex];
                         if (new Date(date) < new Date(currentRange.startDate)) {
                             currentRange.endDate = currentRange.startDate;
                             currentRange.startDate = date;
@@ -135,52 +128,46 @@
 
                 const changeMonth = (direction) => {
                     if (direction === 'prev') {
-                        state.currentMonth = state.currentMonth === 0 ? 11 : state.currentMonth - 1;
-                        state.currentYear = state.currentMonth === 11 ? state.currentYear - 1 : state.currentYear;
+                        state.currentMonth = (state.currentMonth === 0) ? 11 : state.currentMonth - 1;
                     } else if (direction === 'next') {
-                        state.currentMonth = state.currentMonth === 11 ? 0 : state.currentMonth + 1;
-                        state.currentYear = state.currentMonth === 0 ? state.currentYear + 1 : state.currentYear;
+                        state.currentMonth = (state.currentMonth === 11) ? 0 : state.currentMonth + 1;
                     }
+                    state.currentYear += (state.currentMonth === 0 && direction === 'next') ? 1 : (state.currentMonth === 11 && direction === 'prev') ? -1 : 0;
                     calculateDays();
                 };
-
                 calculateDays();
 
                 return { ...toRefs(state), selectDate, changeMonth };
             },
             template: `
-<div>
-    <div class="mb-3 text-center">
-        <button @click="changeMonth('prev')" class="btn btn-info">&lt; 上個月</button>
-        <span class="mx-2">{{ currentYear }}年 {{ currentMonth + 1 }}月</span>
-        <button @click="changeMonth('next')" class="btn btn-info">下個月 &gt;</button>
-    </div>
-    <div class="row text-center">
-        <div class="col-12">
-            <div class="d-flex flex-wrap border-bottom">
-                <div class="p-2 flex-fill" style="width: 14.28%;">日</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">一</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">二</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">三</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">四</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">五</div>
-                <div class="p-2 flex-fill" style="width: 14.28%;">六</div>
-            </div>
-            <div class="d-flex flex-wrap">
-                <div v-for="day in days" :key="day.date" class="p-2 flex-fill" style="width: 14.28%;">
-                    <button v-if="day.day" @click="day.isSelectable ? selectDate(day.date) : null" class="btn w-100" :class="{ 'btn-primary': day.isSelected, 'btn-outline-secondary': !day.isSelected, 'btn-disabled': !day.isSelectable }" :disabled="!day.isSelectable">
-                        {{ day.day }}
-                    </button>
+            <div>
+                <div class="mb-3 text-center">
+                    <button @click="changeMonth('prev')" class="btn btn-info">&lt; 上個月</button>
+                    <span class="mx-2">{{ currentYear }}年 {{ currentMonth + 1 }}月</span>
+                    <button @click="changeMonth('next')" class="btn btn-info">下個月 &gt;</button>
+                </div>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <div class="d-flex flex-wrap border-bottom">
+                            <div class="p-2 flex-fill" v-for="dayName in ['日', '一', '二', '三', '四', '五', '六']" :key="dayName">{{ dayName }}</div>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <div v-for="day in days" :key="day.date" class="p-2 flex-fill" style="width: 14.28%;">
+                                <button v-if="day.day" @click="day.isSelectable && selectDate(day.date)" class="btn w-100"
+                                    :class="{'btn-primary': day.isSelected, 'btn-outline-secondary': !day.isSelected, 'btn-disabled': !day.isSelectable}"
+                                    :disabled="!day.isSelectable">
+                                    {{ day.day }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 `,
         };
 
         createApp({
-            components: { Calendar },
+            components: { Day },
             setup() {
                 const step = ref(1);
                 const selectedDates = ref([]);
@@ -205,10 +192,11 @@
                 const gotoStep = newStep => { step.value = newStep; };
 
                 const autoSelectRooms = () => {
-                    availableRooms.value.forEach(room => room.selected = false);
-                    availableRooms.value.filter(room => room.available)
-                        .slice(0, selectedRoomCount.value)
-                        .forEach(room => room.selected = true);
+                    let count = 0;
+                    availableRooms.value.forEach(room => {
+                        room.selected = room.available && count < selectedRoomCount.value;
+                        if (room.selected) count++;
+                    });
                 };
 
                 const toggleRoomSelection = room => {
@@ -226,21 +214,16 @@
                 const fetchAvailableRooms = (startDate, endDate) => {
                     $.ajax({
                         url: './api/getAvailableRooms.php',
-                        method: 'POST',
+                        type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({ checkInDate: startDate, checkOutDate: endDate }),
-                        success: function(response) {
-                            if (response.rooms && response.rooms.length > 0) {
-                                availableRooms.value = response.rooms.map(room => ({
-                                    roomNumber: room.roomNumber,
-                                    available: room.available
-                                }));
-                                maxRoomCount.value = availableRooms.value.filter(room => room.available).length;
-                            } else {
-                                availableRooms.value = [];
-                                maxRoomCount.value = 0;
-                            }
-                        },
+                        success: response => {
+                            availableRooms.value = response.rooms ? response.rooms.map(room => ({
+                                roomNumber: room.roomNumber,
+                                available: room.available
+                            })) : [];
+                            maxRoomCount.value = availableRooms.value.filter(room => room.available).length;
+                        }
                     });
                 };
                 const calculateTotalPrice = () => {
@@ -265,27 +248,23 @@
 
                     $.ajax({
                         url: './api/createBooking.php',
-                        method: 'POST',
+                        type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify(bookingData),
-                        success: (response) => {
+                        success: function(response) {
                             alert(response.error ? `預定失敗: ${response.error}` : response.message);
-                            if (!response.error && response.success) location.href = "index.php";
-                        },
+                            if (!response.error && response.success) {
+                                location.href = "index.php";
+                            }
+                        }
                     });
                 };
 
-                watch(selectedDates, (newDates) => {
-                    if (newDates[0] && newDates[1]) {
+                watchEffect(() => {
+                    if (selectedDates.value[0] && selectedDates.value[1] && (selectedRooms.value.length > 0 || !selectedRooms)) {
                         calculateTotalPrice();
                     }
                 });
-
-                watch([selectedDates, selectedRooms], () => {
-                    if (selectedDates.value[0] && selectedDates.value[1] && selectedRooms.value.length > 0) {
-                        calculateTotalPrice();
-                    }
-                }, { deep: true });
 
                 return {
                     step,
@@ -311,7 +290,6 @@
                 };
             },
         }).mount('#app');
-    });
 </script>
 </body>
 </html>
